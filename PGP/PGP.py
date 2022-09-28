@@ -27,5 +27,4 @@ def Decode(Pkt):
 # 示例
 # Text = "qefdlkm24ltml24kmghl lkjhkasjeghfqaijfnli sfgvi vlaiejf"
 # Pkt = Encode(Text)
-# print(Pkt)
-# print(Decode(Pkt))
+# Text = Decode(Pkt)
