@@ -294,7 +294,7 @@ def Decode(Cipher):
 
 # 解码 密文，密钥和原始长度
 def Decoder(CipherText, Key, oldlen):
-    ans = []
+    ans = ""
     ExtendKeyArray.clear()
     for i in range(0, 4):
         ExtendKeyArray.append([0] * 44)
@@ -309,13 +309,5 @@ def Decoder(CipherText, Key, oldlen):
             Cipher.append(ord(CipherText[j]))
         temp = Decode(Trans_Array(Cipher))
         for j in Trans_List(temp):
-            ans.append(j)
-    while(len(ans) > oldlen):
-        ans.pop()
-    return ans
-    
-
-Plaintext = "anckdels;193-2md"
-Key = "1m23lkjda4mx0sl1"
-Cipher = Encoder(Plaintext, Key)
-print(Decoder(Cipher[0], Key, Cipher[1]))
+            ans += j
+    return ans[:oldlen - len(ans)]
