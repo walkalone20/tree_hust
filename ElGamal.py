@@ -1,5 +1,4 @@
 from sympy import *
-from numpy import *
 import hashlib
 from random import *
 
