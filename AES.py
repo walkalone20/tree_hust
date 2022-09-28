@@ -93,14 +93,14 @@ ExtendKeyArray = []
 def S_Substitution(text):
     for i in range(0, 4):
         for j in range(0, 4):
-            text[i][j] = S_Table[text[i][j] >> 4][text[i][j] & 15]
+            text[i][j] = S_Table[(text[i][j] & 0xFF) >> 4][text[i][j] & 15]
     return text
 
 
 def Re_S_Substitution(text):
     for i in range(0, 4):
         for j in range(0, 4):
-            text[i][j] = ReS_Table[text[i][j] >> 4][text[i][j] & 15]
+            text[i][j] = ReS_Table[(text[i][j] & 0xFF) >> 4][text[i][j] & 15]
     return text
 
 
@@ -108,8 +108,7 @@ def G_Function(nCol):
     for i in range(0, 4):
         ExtendKeyArray[i][nCol] = ExtendKeyArray[(i + 1) % 4][nCol - 1]
     for i in range(0, 4):
-        ExtendKeyArray[i][nCol] = S_Table[ExtendKeyArray[i]
-            [nCol] >> 4][(ExtendKeyArray[i][nCol]) & 0x0F]
+        ExtendKeyArray[i][nCol] = S_Table[ExtendKeyArray[i][nCol] >> 4][(ExtendKeyArray[i][nCol]) & 0x0F]
     ExtendKeyArray[0][nCol] ^= Rcon[nCol // 4]
 
 # 扩展轮密钥至 4*44
@@ -126,8 +125,7 @@ def CalculateExtendKeyArray(Key):
 
         for j in range(1, 4):
             for k in range(0, 4):
-                ExtendKeyArray[k][4 * i + j] = ExtendKeyArray[k][4 *
-                    i + j - 1] ^ ExtendKeyArray[k][4 * (i - 1) + j]
+                ExtendKeyArray[k][4 * i + j] = ExtendKeyArray[k][4 * i + j - 1] ^ ExtendKeyArray[k][4 * (i - 1) + j]
 
 # 在域x^8+x^4+x^3+x^2+1下进行乘法运算
 
@@ -310,4 +308,6 @@ def Decoder(CipherText, Key, oldlen):
         temp = Decode(Trans_Array(Cipher))
         for j in Trans_List(temp):
             ans += j
-    return ans[:oldlen - len(ans)]
+    if oldlen != len(ans):
+        ans = ans[:oldlen - len(ans)]
+    return ans
