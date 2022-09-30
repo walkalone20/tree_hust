@@ -32,5 +32,4 @@ def Check(Sig):
    S2 = Sig[5]
    V1 = pow(G, HashData, P)
    V2 = pow(Y, S1, P) * pow(S1, S2, P) % P
-   print(V1, V2)
    return V1 == V2
