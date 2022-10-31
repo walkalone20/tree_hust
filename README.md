@@ -5,10 +5,10 @@
 以下为主要界面：
 
 ### 主界面
-![](https://github.com/walkalone20/tree_hust/blob/main/%E4%B8%BB%E7%95%8C%E9%9D%A2.png)
+![](./icon/main.png)
 
 ### 帖子
-![](https://github.com/walkalone20/tree_hust/blob/main/%E5%B8%96%E5%AD%90.png)
+![](./icon/post.png)
 
 ### 设置
-![](https://github.com/walkalone20/tree_hust/blob/main/%E8%AE%BE%E7%BD%AE.png)
+![](./icon/settings.png)
