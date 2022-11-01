@@ -1,8 +1,9 @@
-from django.shortcuts import  render, redirect
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
-from Post import serializer
+from rest_framework import permissions
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from knox.views import LoginView as KnoxLoginView
+from knox.models import AuthToken
+from django.contrib.auth import login
 from .models import User
 from User.serializer import RegistrationSerializer, UserSerializer
 from rest_framework import generics
@@ -19,26 +20,17 @@ class RegisterAPI(generics.GenericAPIView):
                 data['response']="succesfully registered a new user, u know i'm saying??"
                 data['email']=auser.email
                 data['username']=auser.username
+                data['token']=AuthToken.objects.create(auser)[1]
             else:
                 data=serializer.errors
             return Response(data)
 	
+class LoginAPI(KnoxLoginView):
+    permission_classes = (permissions.AllowAny,)
 
-class UserView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    # ^ tell queryset what we want to return 
-    serializer_class = UserSerializer
-    # ^ how to convert this into some format (using PostSerializer)
-
-@api_view(['GET'])
-def getData(request):
-	users=User.objects.all()
-	serializer=UserSerializer(users,mant=True)
-	return Response(serializer.data)
-
-@api_view(['POST'])
-def addUser(request):
-	serializer=UserSerializer(data=request.data)
-	if serializer.is_valid():
-		serializer.save()
-	return Response(serializer.data)
+    def post(self, request, format=None):
+        serializer = AuthTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        login(request, user)
+        return super(LoginAPI, self).post(request, format=None)
