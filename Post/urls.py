@@ -1,7 +1,9 @@
 from django.urls import path
-from .views import PostView
+from .views import CreatePostView, SkimPostView, OpenPostView
 
 #URLConf
 urlpatterns = [
-    path('post', PostView.as_view())
+    path('create_post', CreatePostView.as_view()),
+    path('skim_post', SkimPostView.as_view()),
+    path('open_post', OpenPostView.as_view()),
 ]
