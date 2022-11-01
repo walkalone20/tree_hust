@@ -18,4 +18,9 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+<<<<<<< HEAD
+=======
+    path('Post/',include('Post.urls'))
+
+>>>>>>> 045658215f4805808499294f55de894c7f60e038
 ]
