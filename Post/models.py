@@ -26,14 +26,14 @@ class Post(models.Model):
     # def vote(self, Like):
 
 
-class Draft:
-    DraftID = models.IntergerField(primary_key = True)
-    ID = models.IntegerField()  # 编辑草稿人的编号
-    ReplyTo = models.IntegerField()
-    Time = models.DateTimeField()
-    Text = models.TextField()  # markdown 文本内容
-    Like = models.IntegerField()  # 赞踩数
-    Status = models.IntegerField(choice = STATUS_CHOICE)  # 评论显示状态
-    Tag = models.CharField()
-    Father_Post_ID = models.IntegerField() # 父帖编号
-    Sub_Comment = [] # 子帖编号
+# class Draft:
+#     DraftID = models.IntergerField(primary_key = True)
+#     ID = models.IntegerField()  # 编辑草稿人的编号
+#     ReplyTo = models.IntegerField()
+#     Time = models.DateTimeField()
+#     Text = models.TextField()  # markdown 文本内容
+#     Like = models.IntegerField()  # 赞踩数
+#     Status = models.IntegerField(choice = STATUS_CHOICE)  # 评论显示状态
+#     Tag = models.CharField()
+#     Father_Post_ID = models.IntegerField() # 父帖编号
+#     Sub_Comment = [] # 子帖编号
