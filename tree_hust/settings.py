@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "Post.apps.PostConfig",
     "rest_framework",
-    "User"
+    "User.apps.UserConfig",
+    "imagekit"
 ]
 
 MIDDLEWARE = [
@@ -87,11 +88,11 @@ DATABASES = {
     'default': 
     { 
         'ENGINE': 'django.db.backends.mysql',    # 数据库引擎
-        'NAME': '', # TODO:数据库名称
+        'NAME': 'treehust', # TODO:数据库名称
         'HOST': '127.0.0.1', # 数据库地址，本机 ip 地址 127.0.0.1
         'PORT': 3306, # 端口
         'USER': 'root',  # 数据库用户名
-        'PASSWORD': '', # TODO:数据库密码
+        'PASSWORD': '123456', # TODO:数据库密码
     }  
 }
 
@@ -130,4 +131,4 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = 'User'
+AUTH_USER_MODEL = "User.User"

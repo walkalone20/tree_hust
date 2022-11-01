@@ -37,3 +37,4 @@ class Post(models.Model):
 #     Tag = models.CharField()
 #     Father_Post_ID = models.IntegerField() # 父帖编号
 #     Sub_Comment = [] # 子帖编号
+
