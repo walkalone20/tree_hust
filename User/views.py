@@ -4,8 +4,7 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.views import LoginView as KnoxLoginView
 from knox.models import AuthToken
 from django.contrib.auth import login
-from .models import User
-from User.serializer import RegistrationSerializer, UserSerializer
+from User.serializer import RegistrationSerializer
 from rest_framework import generics
 
 class RegisterAPI(generics.GenericAPIView):
