@@ -3,18 +3,18 @@ from django.db import models
 # Create your models here.
 
 STATUS_CHOICE = [
-    (0, NORMAL), 
-    (1, NEGATIVE), 
-    (2, NEGATIVE_FOLD)
-    (3, USER_FOLD)
-    (4, USER_DELETE)
-    (5, ADMIN_FOLD)
-    (6, ADMIN_DELETE)
+    (0, 'NORMAL'), 
+    (1, 'NEGATIVE'),
+    (2, 'NEGATIVE_FOLD'),
+    (3, 'USER_FOLD'),
+    (4, 'USER_DELETE'),
+    (5, 'ADMIN_FOLD'),
+    (6, 'ADMIN_DELETE')
 ]
 
 Index = 0
 
-class Post:
+class Post(models.Model):
     PostID = models.IntergerField(primary_key = True)
     ID = models.IntegerField()  # 发帖人编号
     ReplyTo = models.IntegerField()
@@ -27,7 +27,8 @@ class Post:
     Sub_Comment = [] # 子帖编号
 
     def __init__(self, ID, ReplyTo, Father_Post_ID, Time, Text, Tag):
-        self.PostID = (Index += 1)
+        Index += 1
+        self.PostID = Index
         self.ID = ID
         self.ReplyTo = ReplyTo
         self.Time = Time
