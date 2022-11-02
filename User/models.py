@@ -7,8 +7,8 @@ from imagekit.models import ProcessedImageField
 class User(AbstractUser):
     email = models.EmailField(unique=True,verbose_name='邮箱')
 
-    browse_history=models.ManyToManyField(Post)
-    collections=models.ManyToManyField(Post)
+    browse_history=models.ManyToManyField("Post.Post",related_name="his")
+    collections=models.ManyToManyField("Post.Post",related_name="fav")
     
 
     
