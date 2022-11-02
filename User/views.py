@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from knox.views import LoginView as KnoxLoginView
 from knox.models import AuthToken
 from django.contrib.auth import login
-from User.serializer import RegistrationSerializer,UpdateUserSerializer
+from User.serializer import RegistrationSerializer,UpdateUserSerializer,ChangePasswordSerializer
 from Post.models import Post
 from .models import User
 
@@ -36,9 +36,11 @@ class LoginAPI(KnoxLoginView):
         return super(LoginAPI, self).post(request, format=None)
 
 class ChangePasswordAPI(generics.GenericAPIView):
-    pass
+    queryset = User.objects.all()
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = ChangePasswordSerializer
 
-class UpdateProfileView(generics.UpdateAPIView):
+class UpdateProfileAPI(generics.UpdateAPIView):
 
     queryset = User.objects.all()
     permission_classes = (permissions.IsAuthenticated,)
