@@ -53,7 +53,7 @@ class Comment(models.Model):
         related_name='post_comment', verbose_name="comment under some post") # & 在某个帖子下的所有评论
     created_at = models.DateTimeField(auto_now_add=True) # * 发帖时间 (generated automatically)
     likes = models.IntegerField(null=False, default=0)  # * 赞踩数 (generated automatically)
-    reply_to = models.ForeignKey('self', on_delete=models.CASCADE,
+    reply_to = models.ForeignKey('self', on_delete=models.CASCADE, default=None,
         related_name='comment_comment', verbose_name='commeng on other comment')  # & 二级引用回复
     comment_by = models.ForeignKey(User, on_delete=models.CASCADE, 
         related_name='user_comment', verbose_name="comment by some user")  # & 回复给某个人
