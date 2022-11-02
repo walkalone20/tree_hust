@@ -9,10 +9,11 @@ from rest_framework.views import APIView
 # ^ allow us to override some default method
 from rest_framework.response import Response
 # ^ Response in a json format
+from django.shortcuts import get_object_or_404
 
 from .models import Post
 # ^ import all the models
-from .serializer import PostSerializer, CreatePostSerializer
+from .serializer import PostSerializer, CreatePostSerializer, OpenPostSerializer
 # ^ import all the serializers
 
 
@@ -31,14 +32,15 @@ from .serializer import PostSerializer, CreatePostSerializer
 
 
 # TODO:Login required
-class DetailedPostView(APIView):
+class CreatePostView(APIView):
     serializer_class = CreatePostSerializer
 
-    def put(self, request, format=None):
+    @login_required
+    def post(self, request, format=None):
         """
             @type: API 接口, 创建一个帖子
             @url: /post/detailed_post
-            @method: put
+            @method: post
             @param: 
                 - post_title: 帖子的标题
                 - post_content: 帖子的内容
@@ -53,8 +55,8 @@ class DetailedPostView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             
-            # FIXME: 根据当前session获取user_id
-            posted_by = self.request.user.id
+            # FIXME: 根据当前session获取user
+            posted_by = self.request.user
             post_title =serializer.data.get('post_title')
             post_content = serializer.data.get('post_content')
             tag = serializer.data.get('tag')
@@ -66,20 +68,13 @@ class DetailedPostView(APIView):
 
         return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request, format=None):
-        """
-            @type: API 接口, 点进一个帖子
-            @url: /post/detailed_post
-            @method: get
-            @param: 
-                - id: 帖子的id标识
-            @return:
-                - post.data: json格式的创建成功的帖子的所有信息和评论的信息
-                - status: HTTP状态码, 获取成功为200 OK; 失败为400 BAD_REQUEST            
-        """
-        pass
     
-    def delete(self, request, format=None):
+
+class DeletePostView(APIView):
+    serializer_class = PostSerializer
+
+    @login_required
+    def post(self, request, format=None):
         """
             @type: API 接口, 删除一个帖子
             @url: /post/detailed_post
@@ -89,36 +84,54 @@ class DetailedPostView(APIView):
             @return:
                 - status: HTTP状态码, 删除成功为200 OK; 失败为400 BAD_REQUEST            
         """
+        pass
 
-"""
-    @type: API 接口, 总览所有帖子
-    @url: /post/skim_post
-    @method: get
-    @param: null
-    @return:
-        - post.data: json格式的所有帖子的概要信息
-            - 用户
-            - 标题
-            - 创建时间
-            - 标签
-            - 评论数 
-            - 观看数
-            - 点赞数
-        - status: HTTP状态码, 成功为200 OK; 失败为400 BAD_REQUEST (FIXME:)
-"""
+
 class SkimPostView(APIView):
-    pass
+    def get(self, request, format=None):
+        """
+            @type: API 接口, 总览所有帖子
+            @url: /post/skim_post
+            @method: get
+            @param: null
+            @return:
+                - post.data: json格式的所有帖子的概要信息 (用户, 标题, 创建时间, 标签, 评论数, 观看数, 点赞数)
+                - status: HTTP状态码, 成功为200 OK; 失败为400 BAD_REQUEST
+        """
+        pass
 
 
-"""
-    @type: API 接口, 打开并查看一个帖子
-    @url: /post/open_post
-    @method: get
-    @param: id (post的id)
-    @return:
-        - post.data: json格式的一个特定帖子的具体信息
-        - status: HTTP状态码, 成功为200 OK; 失败为400 BAD_REQUEST (FIXME:)
-"""
 class OpenPostView(APIView):
+    serializer_class = OpenPostSerializer
+    def get(self, request, format=None):
+        """
+            @type: API 接口, 点进一个帖子
+            @url: /post/detailed_post
+            @method: get
+            @param: 
+                - id: 帖子的id标识 (post的id)
+            @return:
+                - post.data: json格式的创建成功的帖子的所有信息和评论的信息
+                - status: HTTP状态码, 获取成功为200 OK; 失败为400 BAD_REQUEST            
+        """
     pass
 
+
+
+
+class CollectionView(APIView):
+    bad_request_message = 'An error has occurred'
+    # TODO: 需要加两个get方法
+    def post(self, request):
+        post = get_object_or_404(Post, slug=request.data.get('slug'))
+        if request.user not in post.favourite.all():
+            post.favourite.add(request.user)
+            return Response({'detail': 'User added to post'}, status=status.HTTP_200_OK)
+        return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        post = get_object_or_404(Post, slug=request.data.get('slug'))
+        if request.user in post.favourite.all():
+            post.favourite.remove(request.user)
+            return Response({'detail': 'User removed from post'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
