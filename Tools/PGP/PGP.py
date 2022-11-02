@@ -1,6 +1,6 @@
-import AES
-import RSA
-import ElGamal
+from . import AES
+from . import RSA
+from . import ElGamal
 import random
 import hashlib
 import string

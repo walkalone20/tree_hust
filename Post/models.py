@@ -4,7 +4,7 @@ from django.forms import BooleanField
 from Tools import generate_name_animal
 from Tools import generate_name_food
 import random
-from User import User
+
 
 # Create your models here.
 

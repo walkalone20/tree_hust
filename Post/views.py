@@ -66,6 +66,8 @@ class CreatePostView(APIView):
 
         return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
 
+    def get
+
 """
     @type: API 接口, 总览所有帖子
     @url: /post/skim_post
