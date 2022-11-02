@@ -6,7 +6,8 @@ from knox.models import AuthToken
 from django.contrib.auth import login
 from User.serializer import RegistrationSerializer
 from rest_framework import generics
-import get_object_or_404()
+from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
 
 class RegisterAPI(generics.GenericAPIView):
     serializer_class = RegistrationSerializer

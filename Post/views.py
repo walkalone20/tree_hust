@@ -66,7 +66,8 @@ class CreatePostView(APIView):
 
         return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
 
-    def get
+    def get():
+        pass
 
 """
     @type: API 接口, 总览所有帖子
