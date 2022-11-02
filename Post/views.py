@@ -31,14 +31,14 @@ from .serializer import PostSerializer, CreatePostSerializer
 
 
 # TODO:Login required
-class CreatePostView(APIView):
+class DetailedPostView(APIView):
     serializer_class = CreatePostSerializer
 
-    def post(self, request, format=None):
+    def put(self, request, format=None):
         """
             @type: API 接口, 创建一个帖子
-            @url: /post/create_post
-            @method: post
+            @url: /post/detailed_post
+            @method: put
             @param: 
                 - post_title: 帖子的标题
                 - post_content: 帖子的内容
@@ -66,8 +66,29 @@ class CreatePostView(APIView):
 
         return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
 
-    def get():
+    def get(self, request, format=None):
+        """
+            @type: API 接口, 点进一个帖子
+            @url: /post/detailed_post
+            @method: get
+            @param: 
+                - id: 帖子的id标识
+            @return:
+                - post.data: json格式的创建成功的帖子的所有信息和评论的信息
+                - status: HTTP状态码, 获取成功为200 OK; 失败为400 BAD_REQUEST            
+        """
         pass
+    
+    def delete(self, request, format=None):
+        """
+            @type: API 接口, 删除一个帖子
+            @url: /post/detailed_post
+            @method: delete
+            @param: 
+                - id: 帖子的id标识
+            @return:
+                - status: HTTP状态码, 删除成功为200 OK; 失败为400 BAD_REQUEST            
+        """
 
 """
     @type: API 接口, 总览所有帖子
