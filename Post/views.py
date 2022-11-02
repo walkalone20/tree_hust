@@ -13,7 +13,7 @@ from django.shortcuts import get_object_or_404
 
 from .models import Post
 # ^ import all the models
-from .serializer import PostSerializer, CreatePostSerializer, OpenPostSerializer
+from .serializer import CreatePostSerializer, SkimPostSerializer, DeletePostSerializer, OpenPostSerializer
 # ^ import all the serializers
 
 
@@ -30,8 +30,6 @@ from .serializer import PostSerializer, CreatePostSerializer, OpenPostSerializer
 #     # ^ how to convert this into some format (using PostSerializer)
 
 
-
-# TODO:Login required
 class CreatePostView(APIView):
     serializer_class = CreatePostSerializer
 
@@ -52,12 +50,10 @@ class CreatePostView(APIView):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
 
-        serializer = self.serializer_class(data=request.data)
+        serializer= self.serializer_class(data=request.data)
         if serializer.is_valid():
-            
-            # FIXME: 根据当前session获取user
             posted_by = self.request.user
-            post_title =serializer.data.get('post_title')
+            post_title = serializer.data.get('post_title')
             post_content = serializer.data.get('post_content')
             tag = serializer.data.get('tag')
 
@@ -71,7 +67,7 @@ class CreatePostView(APIView):
     
 
 class DeletePostView(APIView):
-    serializer_class = PostSerializer
+    serializer_class = DeletePostSerializer
 
     @login_required
     def post(self, request, format=None):
@@ -82,23 +78,31 @@ class DeletePostView(APIView):
             @param: 
                 - id: 帖子的id标识
             @return:
-                - status: HTTP状态码, 删除成功为200 OK; 失败为400 BAD_REQUEST            
+                - status: HTTP状态码, 删除成功为200 OK        
         """
-        pass
+        serializer = self.serializer_class(data=request.data)
+
+        id = serializer.data.get('id')
+        post= Post.objects.filter(id=id)
+        post.delete()
+        # ^ 因为设置了on_delete=CASCADE, 也同时删除了附着在帖子下面的评论
+
+        return Response(request.data, status=status.HTTP_200_OK)
 
 
-class SkimPostView(APIView):
-    def get(self, request, format=None):
-        """
-            @type: API 接口, 总览所有帖子
-            @url: /post/skim_post
-            @method: get
-            @param: null
-            @return:
-                - post.data: json格式的所有帖子的概要信息 (用户, 标题, 创建时间, 标签, 评论数, 观看数, 点赞数)
-                - status: HTTP状态码, 成功为200 OK; 失败为400 BAD_REQUEST
-        """
-        pass
+
+class SkimPostView(generics.ListAPIView):
+    """
+        @type: API 接口, 总览所有帖子
+        @url: /post/skim_post
+        @method: get
+        @param: null
+        @return:
+            - post.data: json格式的所有帖子的概要信息 (帖子id, 用户, 临时名, 标题, 创建时间, 标签, 评论数, 观看数, 点赞数)
+            - status: HTTP状态码, 成功为200 OK; 失败为400 BAD_REQUEST
+    """
+    queryset = Post.objects.all()
+    serializer_class = SkimPostSerializer
 
 
 class OpenPostView(APIView):
@@ -114,7 +118,15 @@ class OpenPostView(APIView):
                 - post.data: json格式的创建成功的帖子的所有信息和评论的信息
                 - status: HTTP状态码, 获取成功为200 OK; 失败为400 BAD_REQUEST            
         """
-    pass
+        serializer = self.serializer_class(data=request.data)
+
+        id = serializer.data.get('id')
+        post = Post.objects.filter(id=id)
+
+        return Response(post.data, status=status.HTTP_200_OK)
+
+        
+
 
 
 
@@ -122,6 +134,8 @@ class OpenPostView(APIView):
 class CollectionView(APIView):
     bad_request_message = 'An error has occurred'
     # TODO: 需要加两个get方法
+
+    @login_required
     def post(self, request):
         post = get_object_or_404(Post, slug=request.data.get('slug'))
         if request.user not in post.favourite.all():
@@ -129,6 +143,7 @@ class CollectionView(APIView):
             return Response({'detail': 'User added to post'}, status=status.HTTP_200_OK)
         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
 
+    @login_required
     def delete(self, request):
         post = get_object_or_404(Post, slug=request.data.get('slug'))
         if request.user in post.favourite.all():

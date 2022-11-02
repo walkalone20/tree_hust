@@ -38,8 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "Post.apps.PostConfig",
-    "rest_framework",
     "User.apps.UserConfig",
+    "rest_framework",
     "imagekit",
     'knox'
 ]

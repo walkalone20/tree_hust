@@ -4,3 +4,4 @@ from .random_animal import generate_name_animal
 
 from .PGP.PGP import Encode, Decode
 
+from .content_check import check
