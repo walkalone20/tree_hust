@@ -39,7 +39,7 @@ class Post(models.Model):
         
 
 class Draft(models.Model):
-    drafted_by = models.ForeignKey("User", on_delete=models.CASCADE)  # 编辑草稿的人
+    drafted_by = models.ForeignKey("User.User", on_delete=models.CASCADE)  # 编辑草稿的人
     draft_title = models.TextField(null=False)  # 草稿标题
     draft_content = models.TextField()  # 草稿内容
     tag = models.CharField(default='default', max_length=30) # 草稿标签

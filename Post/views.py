@@ -36,12 +36,12 @@ from django.contrib.auth.decorators import login_required
         - post.data: json格式的创建成功的帖子的所有信息
         - status: HTTP状态码, 成功为201 CREATED; 失败为400 BAD_REQUEST (FIXME:)
 """
-@login_required # TODO:?
+# TODO:Login required
 class CreatePostView(APIView):
     serializer_class = CreatePostSerializer
 
     def post(self, request, format=None):
-        if not self.request.session.exists(self.reuqest.session.session_key):
+        if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
 
         serializer = self.serializer_class(data=request.data)
