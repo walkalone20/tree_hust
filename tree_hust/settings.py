@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     "Post.apps.PostConfig",
     "rest_framework",
     "User.apps.UserConfig",
-    "imagekit"
+    "imagekit",
+    'knox'
 ]
 
 MIDDLEWARE = [
@@ -131,3 +132,11 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "User.User"
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        'knox.auth.TokenAuthentication',
+    ]
+}
