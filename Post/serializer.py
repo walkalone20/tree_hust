@@ -11,7 +11,7 @@ class PostSerializer(serializers.ModelSerializer):
 class CreatePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ('post_title', 'post_content', 'tag')
+        fields = ('posted_by', 'post_title', 'post_content', 'tag')
 
 
 class SkimPostSerializer(serializers.ModelSerializer):

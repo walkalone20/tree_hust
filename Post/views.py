@@ -47,11 +47,13 @@ class CreatePostView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             
-            # TODO: 根据当前session获取user_id
+            # FIXME: 根据当前session获取user_id
+            posted_by = self.request.user.id
+            post_title =serializer.data.get('post_title')
             post_content = serializer.data.get('post_content')
-            tag = serializer.data.get('tag')    # FIXME: ?
+            tag = serializer.data.get('tag')
 
-            post = Post(post_content=post_content, tag=tag)
+            post = Post(post_content=post_content, tag=tag, post_title=post_title, posted_by=posted_by)
             post.save()
 
             return Response(post.data, status=status.HTTP_201_CREATED)

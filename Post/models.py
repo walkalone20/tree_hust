@@ -30,8 +30,8 @@ class Post(models.Model):
     # father_post_id = models.IntegerField() # 父帖编号，comment的属性
     # sub_comment = [] # 子帖编号
 
-    def __init__(self, user_id, post_title, post_content, tag):
-        self.user_id = user_id
+    def __init__(self, posted_by, post_title, post_content, tag):
+        self.user_id = posted_by
         self.post_title = post_title
         self.post_content = post_content
         self.likes = 0
