@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 
+SECRET_KEY = "django-insecure-%l7)j=on9)lrg7s$y$dl$4xq3a#+c(16foi&^%z^&43980um+d"
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
