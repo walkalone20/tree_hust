@@ -3,8 +3,6 @@ from .models import Post
 from Tools import check
 
 
-
-
 class CreatePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
@@ -17,7 +15,7 @@ class CreatePostSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'post_content': '内容不合法'})
         # ^ 检查内容是否合法
 
-        super.save(args, kwargs)
+        super.save(*args, **kwargs)
 
 
 class DeletePostSerializer(serializers.ModelSerializer):

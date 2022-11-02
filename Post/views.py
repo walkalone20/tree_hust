@@ -11,6 +11,7 @@ from rest_framework.response import Response
 # ^ Response in a json format
 from django.shortcuts import get_object_or_404
 
+from User.models import User
 from .models import Post
 # ^ import all the models
 from .serializer import CreatePostSerializer, SkimPostSerializer, DeletePostSerializer, OpenPostSerializer
@@ -35,13 +36,15 @@ class CreatePostView(APIView):
             @return:
                 - post.data: json格式的创建成功的帖子的所有信息
                 - status: HTTP状态码, 成功为201 CREATED; 失败为400 BAD_REQUEST
+            @exception:
+                - ValidationError: 标题 或 内容 不合法时抛出
         """
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
 
         serializer= self.serializer_class(data=request.data)
         if serializer.is_valid():
-            posted_by = self.request.user
+            posted_by = User.objects.filter(id=self.request.user.id)
             post_title = serializer.data.get('post_title')
             post_content = serializer.data.get('post_content')
             tag = serializer.data.get('tag')
@@ -66,12 +69,18 @@ class DeletePostView(APIView):
             @param: 
                 - id: 帖子的id标识
             @return:
-                - status: HTTP状态码, 删除成功为200 OK        
+                - status: HTTP状态码, 删除成功为200 OK, 删除失败为400 BAD_REQUEST   
         """
         serializer = self.serializer_class(data=request.data)
 
         id = serializer.data.get('id')
         post= Post.objects.filter(id=id)
+        
+        posted_by = post.get('posted_by')
+        if self.request.user.id != posted_by.id:
+            return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
+        # ^ 判断是否有删除的权限
+
         post.delete()
         # ^ 因为设置了on_delete=CASCADE, 也同时删除了附着在帖子下面的评论
 

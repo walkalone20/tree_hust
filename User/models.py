@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from Post.models import Post
 from imagekit.models import ProcessedImageField
 # Create your models here.
 
