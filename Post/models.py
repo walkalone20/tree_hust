@@ -25,19 +25,20 @@ class Post(models.Model):
     watches = models.IntegerField(null=False, default=0)    # * 观看数 (generated automatically)
     comments = models.IntegerField(null=False, default=0)   # * 评论数 (generated automatically)
     tag = models.CharField(default='default', max_length=30)    # 帖子的标签
+    favourite = models.ManyToManyField("User.User", related_name='post_favourite', blank=True)  #收藏帖子
 
     # PostID = models.IntergerField(primary_key=True)
     # reply_to = models.IntegerField()  # 给谁回复，comment的属性
     # father_post_id = models.IntegerField() # 父帖编号，comment的属性
     # sub_comment = [] # 子帖编号
-
+"""
     def __init__(self, posted_by, post_title, post_content, tag):
         self.user_id = posted_by
         self.post_title = post_title
         self.post_content = post_content
         self.likes = 0
         self.tag = tag
-        
+"""
 
 class Draft(models.Model):
     drafted_by = models.ForeignKey("User.User", on_delete=models.CASCADE)  # 编辑草稿的人

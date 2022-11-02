@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 # ^ allow us to override some default method
 from rest_framework.response import Response
 # ^ Response in a json format
+from django.shortcuts import get_object_or_404
 
 from .models import Post
 # ^ import all the models
@@ -34,6 +35,7 @@ from .serializer import PostSerializer, CreatePostSerializer
 class CreatePostView(APIView):
     serializer_class = CreatePostSerializer
 
+    @login_required
     def post(self, request, format=None):
         """
             @type: API 接口, 创建一个帖子
@@ -53,8 +55,8 @@ class CreatePostView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             
-            # FIXME: 根据当前session获取user_id
-            posted_by = self.request.user.id
+            # FIXME: 根据当前session获取user
+            posted_by = self.request.user
             post_title =serializer.data.get('post_title')
             post_content = serializer.data.get('post_content')
             tag = serializer.data.get('tag')
@@ -66,8 +68,8 @@ class CreatePostView(APIView):
 
         return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
 
-    def get():
-        pass
+#    def get(self,request):
+#        pass
 
 """
     @type: API 接口, 总览所有帖子
@@ -101,3 +103,19 @@ class SkimPostView(APIView):
 class OpenPostView(APIView):
     pass
 
+class CollectionView(APIView):
+    bad_request_message = 'An error has occurred'
+
+    def post(self, request):
+        post = get_object_or_404(Post, slug=request.data.get('slug'))
+        if request.user not in post.favourite.all():
+            post.favourite.add(request.user)
+            return Response({'detail': 'User added to post'}, status=status.HTTP_200_OK)
+        return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        post = get_object_or_404(Post, slug=request.data.get('slug'))
+        if request.user in post.favourite.all():
+            post.favourite.remove(request.user)
+            return Response({'detail': 'User removed from post'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)

@@ -41,5 +41,5 @@ class ChangePasswordAPI(generics.GenericAPIView):
 class UpdateProfileView(generics.UpdateAPIView):
 
     queryset = User.objects.all()
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UpdateUserSerializer
