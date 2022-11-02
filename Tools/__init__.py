@@ -1,3 +1,4 @@
-from . import generate_name_food
+from .random_food import generate_name_food
 
-from . import generate_name_animal
+from .random_animal import generate_name_animal
+

@@ -1,14 +1,20 @@
 from turtle import pos
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+
 from rest_framework import generics, status
 # ^ status: allows us to get access to http status 
-from .models import Post
-from .serializer import PostSerializer, CreatePostSerializer
 from rest_framework.views import APIView
 # ^ allow us to override some default method
 from rest_framework.response import Response
-from django.contrib.auth.decorators import login_required
+# ^ Response in a json format
+
+from .models import Post
+# ^ import all the models
+from .serializer import PostSerializer, CreatePostSerializer
+# ^ import all the serializers
+
 
 # Create your views here.
 
@@ -24,23 +30,23 @@ from django.contrib.auth.decorators import login_required
 
 
 
-"""
-    @type: API 接口, 创建一个帖子
-    @url: /post/create_post
-    @method: post
-    @param: 
-        - post_title: 帖子的标题
-        - post_content: 帖子的内容
-        - tag: 帖子的标签 (FIXME: 用户指定？)
-    @return:
-        - post.data: json格式的创建成功的帖子的所有信息
-        - status: HTTP状态码, 成功为201 CREATED; 失败为400 BAD_REQUEST (FIXME:)
-"""
 # TODO:Login required
 class CreatePostView(APIView):
     serializer_class = CreatePostSerializer
 
     def post(self, request, format=None):
+        """
+            @type: API 接口, 创建一个帖子
+            @url: /post/create_post
+            @method: post
+            @param: 
+                - post_title: 帖子的标题
+                - post_content: 帖子的内容
+                - tag: 帖子的标签 (根据当前用户所处的tag下默认指定或用户选择)
+            @return:
+                - post.data: json格式的创建成功的帖子的所有信息
+                - status: HTTP状态码, 成功为201 CREATED; 失败为400 BAD_REQUEST
+        """
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
 
@@ -58,7 +64,7 @@ class CreatePostView(APIView):
 
             return Response(post.data, status=status.HTTP_201_CREATED)
 
-        return Response(request.data, status=status.HTTP_400_BAD_REQUEST)  # FIXME: bad request?
+        return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 """
     @type: API 接口, 总览所有帖子
