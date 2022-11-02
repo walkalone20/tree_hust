@@ -16,18 +16,7 @@ from .models import Post
 from .serializer import CreatePostSerializer, SkimPostSerializer, DeletePostSerializer, OpenPostSerializer
 # ^ import all the serializers
 
-
 # Create your views here.
-
-# class CreatePostView(generics.CreateAPIView):
-#     queryset = Post.objects.all()
-#     serializer_class = PostSerializer
-
-# class ListPostView(generics.ListAPIView):
-#     queryset = Post.objects.all()
-#     # ^ tell queryset what we want to return 
-#     serializer_class = PostSerializer
-#     # ^ how to convert this into some format (using PostSerializer)
 
 
 class CreatePostView(APIView):
@@ -63,7 +52,6 @@ class CreatePostView(APIView):
             return Response(post.data, status=status.HTTP_201_CREATED)
 
         return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
-
     
 
 class DeletePostView(APIView):
@@ -90,7 +78,6 @@ class DeletePostView(APIView):
         return Response(request.data, status=status.HTTP_200_OK)
 
 
-
 class SkimPostView(generics.ListAPIView):
     """
         @type: API 接口, 总览所有帖子
@@ -102,7 +89,9 @@ class SkimPostView(generics.ListAPIView):
             - status: HTTP状态码, 成功为200 OK; 失败为400 BAD_REQUEST
     """
     queryset = Post.objects.all()
+    # ^ tell queryset what we want to return 
     serializer_class = SkimPostSerializer
+    # ^ how to convert this into some format (using PostSerializer)
 
 
 class OpenPostView(APIView):
