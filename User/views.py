@@ -37,7 +37,7 @@ class LoginAPI(KnoxLoginView):
         login(request, user)
         return super(LoginAPI, self).post(request, format=None)
 
-class ChangePasswordAPI(generics.GenericAPIView):
+class ChangePasswordAPI(generics.UpdateAPIView):
     queryset = User.objects.all()
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ChangePasswordSerializer
