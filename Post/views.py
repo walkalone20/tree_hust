@@ -39,8 +39,6 @@ class CreatePostView(APIView):
             @exception:
                 - ValidationError: 标题 或 内容 不合法时抛出
         """
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
 
         serializer= self.serializer_class(data=request.data)
         if serializer.is_valid():
