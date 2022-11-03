@@ -132,7 +132,7 @@ class OpenPostView(APIView):
 class CollectionView(APIView):
     bad_request_message = 'An error has occurred'
     # TODO: 需要加两个get方法
-
+    
     @login_required
     def post(self, request):
         post = get_object_or_404(Post, slug=request.data.get('slug'))
