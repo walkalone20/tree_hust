@@ -34,3 +34,8 @@ class OpenPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id')
+
+class SkimCollectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ('id', 'posted_by', 'tmp_name', 'created_at', 'post_title', 'tag', 'likes', 'watches', 'comments')

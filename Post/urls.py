@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CreatePostView, SkimPostView, OpenPostView, DeletePostView, CollectionView
+from .views import CreatePostView, SkimPostView, OpenPostView, DeletePostView, CollectionView,CollectionListView
 
 #URLConf
 urlpatterns = [
@@ -8,4 +8,5 @@ urlpatterns = [
     path('skim_post', SkimPostView.as_view()),
     path('open_post', OpenPostView.as_view()),
     path('collect_post/', CollectionView.as_view(), name='Collection'),
+    path('skim_collect_post/', CollectionListView.as_view(), name='Collection'),
 ]
