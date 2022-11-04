@@ -25,18 +25,6 @@ class RegisterAPI(generics.GenericAPIView):
             data=serializer.errors
         return Response(data)
 	
-class LoginAPI(KnoxLoginView):
-    permission_classes = (permissions.AllowAny,)
-
-    def post(self, request, format=None):
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
-        serializer = AuthTokenSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        login(request, user)
-        return super(LoginAPI, self).post(request, format=None)
-
 class ChangePasswordAPI(generics.UpdateAPIView):
     serializer_class = ChangePasswordSerializer
     queryset = User.objects.all()

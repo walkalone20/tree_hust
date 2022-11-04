@@ -2,7 +2,8 @@ from turtle import pos
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import permissions,generics, status
 # ^ status: allows us to get access to http status 
 from rest_framework.views import APIView
@@ -27,9 +28,10 @@ from .serializer import FilterPostSerialzer, SearchPostSerialzer
 
 
 class CreatePostView(APIView):
+    authentication_classes = [TokenAuthentication,]
+    permission_classes = [IsAuthenticated]
     serializer_class = CreatePostSerializer
 
-    @login_required
     def post(self, request, format=None):
         """
             @type: API 接口, 创建一个帖子
@@ -125,7 +127,6 @@ class OpenPostView(APIView):    # TODO: 显示相关评论
         post = Post.objects.filter(id=id)
 
         if(request.user.is_authenticated):
-            post = get_object_or_404(Post, slug=request.data.get('slug'))
             if request.user not in post.browser.all():
                 post.browser.add(request.user)
 
