@@ -28,13 +28,10 @@ class CreatePostView(APIView):
     @login_required
     def post(self, request, format=None):
         """
-            @type: API 接口, 创建一个帖子
+            创建一个帖子
             @url: /post/create_post
             @method: post
-            @param: 
-                - post_title: 帖子的标题
-                - post_content: 帖子的内容
-                - tag: 帖子的标签 (根据当前用户所处的tag下默认指定或用户选择)
+            @param: post_title, post_content, tag
             @return:
                 - post.data: json格式的创建成功的帖子的所有信息
                 - status: HTTP状态码, 成功为201 CREATED; 失败为400 BAD_REQUEST
@@ -55,19 +52,31 @@ class CreatePostView(APIView):
             return Response(post.data, status=status.HTTP_201_CREATED)
 
         return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SkimPostView(generics.ListAPIView):
+    """
+        @type: API 接口, 总览所有帖子
+        @url: /post/skim_post
+        @method: get
+        @param: null
+        @return:
+            - json格式的所有帖子的概要信息 (帖子id, 用户, 临时名, 标题, 创建时间, 标签, 评论数, 观看数, 点赞数)
+    """
+    queryset = Post.objects.all()
+    serializer_class = SkimPostSerializer
     
 
 class DeletePostView(APIView):
     serializer_class = DeletePostSerializer
 
     @login_required
-    def post(self, request, format=None):
+    def delete(self, request, format=None):
         """
-            @type: API 接口, 删除一个帖子
+            删除一个帖子
             @url: /post/delete_post
-            @method: post
-            @param: 
-                - id: 帖子的id标识
+            @method: delete
+            @param: id(帖子的id)
             @return:
                 - status: HTTP状态码, 删除成功为200 OK, 删除失败为400 BAD_REQUEST   
         """
@@ -93,21 +102,6 @@ class UpdatePostView(generics.UpdateAPIView):
     lookup_field = 'pk'
 
 
-
-
-class SkimPostView(generics.ListAPIView):
-    """
-        @type: API 接口, 总览所有帖子
-        @url: /post/skim_post
-        @method: get
-        @param: null
-        @return:
-            - json格式的所有帖子的概要信息 (帖子id, 用户, 临时名, 标题, 创建时间, 标签, 评论数, 观看数, 点赞数)
-    """
-    queryset = Post.objects.all()
-    serializer_class = SkimPostSerializer
-
-
 class OpenPostView(APIView):    # TODO: 显示相关评论
     serializer_class = OpenPostSerializer
     def get(self, request, format=None):
@@ -115,8 +109,7 @@ class OpenPostView(APIView):    # TODO: 显示相关评论
             @type: API 接口, 点进一个帖子
             @url: /post/open_post
             @method: get
-            @param: 
-                - id: 帖子的id标识 (post的id)
+            @param: id(post的id)
             @return:
                 - post.data: json格式的创建成功的帖子的所有信息和评论的信息
                 - status: HTTP状态码, 获取成功为200 OK; 失败为400 BAD_REQUEST            
@@ -139,8 +132,7 @@ class FilterPostView(generics.ListAPIView):
         @type: API 接口, 根据tag对帖子进行筛选
         @url: /post/filter_post
         @method: get
-        @param: 
-            - tag: 帖子的标签
+        @param: tag
         @return:
             - json格式的满足tag的所有帖子信息的概览
     """
