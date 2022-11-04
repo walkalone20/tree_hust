@@ -4,93 +4,75 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import permissions,generics, status
+from rest_framework import permissions,generics, status, mixins
 # ^ status: allows us to get access to http status 
+from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.mixins import LoginRequiredMixin
+from rest_framework import permissions, generics, status
 from rest_framework.views import APIView
-# ^ allow us to override some default method
 from rest_framework.response import Response
-# ^ Response in a json format
+from rest_framework.authentication import TokenAuthentication
 from django.shortcuts import get_object_or_404
-# ^ object or 404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
-# ^ filter mechanism
+
 
 from User.models import User
 from .models import Post, Draft, Comment
-# ^ import all the models
+
 
 from .serializer import CreatePostSerializer, SkimPostSerializer, DeletePostSerializer, OpenPostSerializer
 from .serializer import SkimCollectionSerializer, SkimBrowserSerializer, CreateDraftSerializer
 from .serializer import DeleteDraftSerializer, SkimDraftSerializer, OpenDraftSerializer, UpdateDraftSerializer
 from .serializer import FilterPostSerialzer, SearchPostSerialzer
-# ^ import all the serializers
+
+from .permissions import IsOwnerOrReadOnlyPermission
 
 
-class CreatePostView(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+class CreatePostView(generics.CreateAPIView):
+    """
+    创建一个帖子
+    @url: /post/create_post
+    @method: post
+    @param: post_title, post_content, tag
+    @return:
+        - post.data: json格式的创建成功的帖子的所有信息
+        - status: HTTP状态码, 成功为201 CREATED; 失败为400 BAD_REQUEST
+    @exception:
+        - ValidationError: 标题 或 内容 不合法时抛出
+    """
+    queryset = Post.objects.all()
     serializer_class = CreatePostSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, format=None):
-        """
-            @type: API 接口, 创建一个帖子
-            @url: /post/create_post
-            @method: post
-            @param: 
-                - post_title: 帖子的标题
-                - post_content: 帖子的内容
-                - tag: 帖子的标签 (根据当前用户所处的tag下默认指定或用户选择)
-            @return:
-                - post.data: json格式的创建成功的帖子的所有信息
-                - status: HTTP状态码, 成功为201 CREATED; 失败为400 BAD_REQUEST
-            @exception:
-                - ValidationError: 标题 或 内容 不合法时抛出
-        """
+    def perform_create(self, serializer):
+        post_title = serializer.validated_data.get('post_title')
+        post_content = serializer.validated_data.get('post_content')
+        tag = serializer.validated_data.get('tag')
+        serializer.save(post_title=post_title, post_content=post_content, tag=tag)
 
-        serializer= self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            posted_by = User.objects.filter(id=self.request.user.id)
-            post_title = serializer.data.get('post_title')
-            post_content = serializer.data.get('post_content')
-            tag = serializer.data.get('tag')
+    # authentication_classes = [permissions.IsAuthenticated]
+    # permission_classes = [IsOwnerOrReadOnlyPermission]
 
-            post = Post(post_content=post_content, tag=tag, post_title=post_title, posted_by=posted_by.get('id'))
-            post.save()
+# class oldCreatePostView(APIView):
+#     serializer_class = CreatePostSerializer
 
-            return Response(post.data, status=status.HTTP_201_CREATED)
+#     @login_required # FIXME
+#     def post(self, request, format=None):
+#         serializer= self.serializer_class(data=request.data)
+#         if serializer.is_valid():
+#             posted_by = User.objects.filter(id=self.request.user.id)
+#             post_title = serializer.data.get('post_title')
+#             post_content = serializer.data.get('post_content')
+#             tag = serializer.data.get('tag')
 
-        return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
-    
+#             post = Post(post_content=post_content, tag=tag, post_title=post_title, posted_by=posted_by.get('id'))
+#             post.save()
 
-class DeletePostView(APIView):
-    serializer_class = DeletePostSerializer
+#             return Response(post.data, status=status.HTTP_201_CREATED)
 
-    @login_required
-    def post(self, request, format=None):
-        """
-            @type: API 接口, 删除一个帖子
-            @url: /post/delete_post
-            @method: post
-            @param: 
-                - id: 帖子的id标识
-            @return:
-                - status: HTTP状态码, 删除成功为200 OK, 删除失败为400 BAD_REQUEST   
-        """
-        serializer = self.serializer_class(data=request.data)
-
-        id = serializer.data.get('id')
-        post= Post.objects.filter(id=id)
-        
-        posted_by = post.get('posted_by')
-        if self.request.user.id != posted_by.id:
-            return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
-        # ^ 判断是否有删除的权限
-
-        post.delete()
-        # ^ 因为设置了on_delete=CASCADE, 也同时删除了附着在帖子下面的评论
-
-        return Response(request.data, status=status.HTTP_200_OK)
+#         return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SkimPostView(generics.ListAPIView):
@@ -103,34 +85,95 @@ class SkimPostView(generics.ListAPIView):
             - json格式的所有帖子的概要信息 (帖子id, 用户, 临时名, 标题, 创建时间, 标签, 评论数, 观看数, 点赞数)
     """
     queryset = Post.objects.all()
-    # ^ tell queryset what we want to return 
     serializer_class = SkimPostSerializer
-    # ^ how to convert this into some format (using PostSerializer)
 
 
-class OpenPostView(APIView):    # TODO: 显示相关评论
+class OpenPostView(generics.RetrieveAPIView):
     serializer_class = OpenPostSerializer
-    def get(self, request, format=None):
-        """
-            @type: API 接口, 点进一个帖子
-            @url: /post/open_post
-            @method: get
-            @param: 
-                - id: 帖子的id标识 (post的id)
-            @return:
-                - post.data: json格式的创建成功的帖子的所有信息和评论的信息
-                - status: HTTP状态码, 获取成功为200 OK; 失败为400 BAD_REQUEST            
-        """
-        serializer = self.serializer_class(data=request.data)
+    queryset = Post.objects.all()
+    lookup_field = 'pk'
+    
+    
+# class oldOpenPostView(APIView):    # TODO: 显示相关评论
+#     serializer_class = OpenPostSerializer
 
-        id = serializer.data.get('id')
-        post = Post.objects.filter(id=id)
+#     def get(self, request, pk = None, format=None):
+#         """
+#             @type: API 接口, 点进一个帖子
+#             @url: /post/<int:pk>/
+#             @method: get
+#             @param: null
+#             @return:
+#                 - post.data: json格式的创建成功的帖子的所有信息和评论的信息
+#                 - status: HTTP状态码, 获取成功为200 OK; 失败为400 BAD_REQUEST            
+#         """
+#         if pk == None:
+#             return Response({"detailed": "url error!"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if(request.user.is_authenticated):
-            if request.user not in post.browser.all():
-                post.browser.add(request.user)
+#         post = Post.objects.filter(id=pk)
+#         serializer = self.serializer_class(data=post)
 
-        return Response(post.data, status=status.HTTP_200_OK)
+#         serializer.is_valid(raise_exception=True)
+
+#         # if request.user.is_authenticated:
+#         #     if request.user not in post.browser.all():
+#         #         post.browser.add(request.user)
+#         #         post.update()
+
+#         # post.update()
+#         # TODO: 增加浏览记录
+#         # if(request.user.is_authenticated):
+#         #     if request.user not in post.browser.all():
+#         #         post.browser.add(request.user)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class DeletePostView(generics.DestroyAPIView):
+    serializer_class = DeletePostSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'pk'
+    """
+    删除一个帖子
+    @url: /post/delete_post
+    @method: delete
+    @param: id(帖子的id)
+    @return:
+        - status: HTTP状态码, 删除成功为200 OK, 删除失败为400 BAD_REQUEST   
+    """
+    def get_queryset(self):
+        queryset = Post.objects.filter(posted_by=self.request.user)
+        return queryset
+
+    def perform_destroy(self, instance):
+        return super().perform_destroy(instance)
+
+
+
+# class oldDeletePostView(APIView):
+#     serializer_class = DeletePostSerializer
+
+#     def delete(self, request, pk=None, format=None):
+
+#         serializer = self.serializer_class(data=request.data)
+
+#         post= Post.objects.filter(id=pk)
+        
+#         posted_by = post.get('posted_by')
+#         if not request.user.is_authenticated or self.request.user != posted_by:
+#             return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
+#         # ^ 判断是否有删除的权限
+
+#         post.delete()
+#         # ^ 因为设置了on_delete=CASCADE, 也同时删除了附着在帖子下面的评论
+
+#         return Response(request.data, status=status.HTTP_200_OK)
+
+
+class UpdatePostView(generics.UpdateAPIView):
+    queryset = Post.objects.all()
+    serializer_class = SkimPostSerializer
+    lookup_field = 'pk'
         
 
 class FilterPostView(generics.ListAPIView):
@@ -138,8 +181,7 @@ class FilterPostView(generics.ListAPIView):
         @type: API 接口, 根据tag对帖子进行筛选
         @url: /post/filter_post
         @method: get
-        @param: 
-            - tag: 帖子的标签
+        @param: tag
         @return:
             - json格式的满足tag的所有帖子信息的概览
     """
