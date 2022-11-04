@@ -12,9 +12,9 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 
 from User.models import User
-from .models import Post
+from .models import Post,Draft,Comment
 # ^ import all the models
-from .serializer import CreatePostSerializer, SkimPostSerializer, DeletePostSerializer, OpenPostSerializer,SkimCollectionSerializer,SkimBrowserSerializer
+from .serializer import CreatePostSerializer, SkimPostSerializer, DeletePostSerializer, OpenPostSerializer,SkimCollectionSerializer,SkimBrowserSerializer,CreateDraftSerializer,DeleteDraftSerializer
 # ^ import all the serializers
 
 # Create your views here.
@@ -159,3 +159,44 @@ class CollectionView(APIView):
             post.favourite.remove(request.user)
             return Response({'detail': 'User removed from post'}, status=status.HTTP_204_NO_CONTENT)
         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CreateDraftView(APIView):
+    serializer_class = CreateDraftSerializer
+
+    @login_required
+    def post(self, request, format=None):
+        serializer= self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            drafted_by = User.objects.filter(id=self.request.user.id)
+            draft_title = serializer.data.get('draft_title')
+            draft_content = serializer.data.get('draft_content')
+            tag = serializer.data.get('tag')
+
+            draft = Draft(draft_content=draft_content, tag=tag, draft_title=draft_title, drafted_by=drafted_by)
+            draft.save()
+
+            return Response(draft.data, status=status.HTTP_201_CREATED)
+
+        return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class DeleteDraftView(APIView):
+    serializer_class = DeleteDraftSerializer
+
+    @login_required
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+
+        id = serializer.data.get('id')
+        draft= Draft.objects.filter(id=id)
+        
+        drafted_by = draft.get('drafted_by')
+        if self.request.user.id != drafted_by.id:
+            return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
+        # ^ 判断是否有删除的权限
+
+        draft.delete()
+        # ^ 因为设置了on_delete=CASCADE, 也同时删除了附着在帖子下面的评论
+
+        return Response(request.data, status=status.HTTP_200_OK)
