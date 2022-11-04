@@ -42,8 +42,13 @@ INSTALLED_APPS = [
     "User.apps.UserConfig",
     "rest_framework",
     "imagekit",
-    'knox'
+    'knox',
+    'django_filters',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -91,11 +96,11 @@ DATABASES = {
     'default': 
     { 
         'ENGINE': 'django.db.backends.mysql',    # 数据库引擎
-        'NAME': 'treehust2', # TODO:数据库名称
+        'NAME': 'treehust', # TODO:数据库名称
         'HOST': '127.0.0.1', # 数据库地址，本机 ip 地址 127.0.0.1
         'PORT': 3306, # 端口
         'USER': 'root',  # 数据库用户名
-        'PASSWORD': '123456', # TODO:数据库密码
+        'PASSWORD': 'AnyuElin10', # TODO:数据库密码
     }  
 }
 
