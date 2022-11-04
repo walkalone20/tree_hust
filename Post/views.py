@@ -222,7 +222,7 @@ class OpenDraftView(APIView):
 
         return Response(draft.data, status=status.HTTP_200_OK)
 
-class UpdateDraftAPI(generics.UpdateAPIView):
+class UpdateDraftView(generics.UpdateAPIView):
 
     queryset = Draft.objects.all()
     permission_classes = (permissions.IsAuthenticated,)

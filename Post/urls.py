@@ -1,5 +1,7 @@
 from django.urls import path
-from .views import CreatePostView, SkimPostView, OpenPostView, DeletePostView, CollectionView,CollectionListView,CreateDraftView,DeleteDraftView
+from .views import CreatePostView, SkimPostView, OpenPostView, DeletePostView, CollectionView,\
+    CollectionListView,CreateDraftView,DeleteDraftView,UpdateDraftView,BrowserListView,OpenDraftView,\
+    DraftListView
 
 #URLConf
 urlpatterns = [
@@ -9,7 +11,10 @@ urlpatterns = [
     path('open_post', OpenPostView.as_view()),
     path('collect_post/', CollectionView.as_view()),
     path('skim_collect_post/', CollectionListView.as_view()),
+    path('skim_browser_post/', BrowserListView.as_view()),
+    path('skim_draft/', DraftListView.as_view()),
+    path('open_draft/', OpenDraftView.as_view()),
     path('create_draft', CreateDraftView.as_view()),
     path('delete_draft', DeleteDraftView.as_view()),
-    path('update_draft', DeleteDraftView.as_view()),
+    path('update_draft', UpdateDraftView.as_view()),
 ]
