@@ -14,7 +14,7 @@ from django.shortcuts import get_object_or_404
 from User.models import User
 from .models import Post
 # ^ import all the models
-from .serializer import CreatePostSerializer, SkimPostSerializer, DeletePostSerializer, OpenPostSerializer,SkimCollectionSerializer
+from .serializer import CreatePostSerializer, SkimPostSerializer, DeletePostSerializer, OpenPostSerializer,SkimCollectionSerializer,SkimBrowserSerializer
 # ^ import all the serializers
 
 # Create your views here.
@@ -119,14 +119,26 @@ class OpenPostView(APIView):
         id = serializer.data.get('id')
         post = Post.objects.filter(id=id)
 
+        if(request.user.is_authenticated):
+            post = get_object_or_404(Post, slug=request.data.get('slug'))
+            if request.user not in post.browser.all():
+                post.browser.add(request.user)
+
         return Response(post.data, status=status.HTTP_200_OK)
 
-class CollectionListView(generics.ListAPIView):
+class CollectionListView(APIView):
     serializer_class = SkimCollectionSerializer
 
     @login_required
-    def get_queryset(self,request):
-        return request.user.related.all()
+    def get(self,request):
+        return request.user.user_favorite.all()
+
+class BrowserListView(APIView):
+    serializer_class = SkimBrowserSerializer
+
+    @login_required
+    def get(self,request):
+        return request.user.user_browser.all()
 
 class CollectionView(APIView):
     bad_request_message = 'An error has occurred'
