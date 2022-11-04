@@ -28,7 +28,7 @@ from .serializer import FilterPostSerialzer, SearchPostSerialzer
 
 
 class CreatePostView(APIView):
-    authentication_classes = [TokenAuthentication,]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = CreatePostSerializer
 

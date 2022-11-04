@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     "User.apps.UserConfig",
     "rest_framework",
     "imagekit",
-    'knox',
     'django_filters',
 ]
 
@@ -147,7 +146,6 @@ REST_FRAMEWORK = {
         #'rest_framework.authentication.BasicAuthentication',
         #'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-        'knox.auth.TokenAuthentication',
     ]
 }
 
