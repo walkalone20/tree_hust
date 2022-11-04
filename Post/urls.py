@@ -11,4 +11,5 @@ urlpatterns = [
     path('skim_collect_post/', CollectionListView.as_view()),
     path('create_draft', CreateDraftView.as_view()),
     path('delete_draft', DeleteDraftView.as_view()),
+    path('update_draft', DeleteDraftView.as_view()),
 ]

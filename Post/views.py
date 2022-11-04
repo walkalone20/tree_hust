@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
-from rest_framework import generics, status
+from rest_framework import permissions,generics, status
 # ^ status: allows us to get access to http status 
 from rest_framework.views import APIView
 # ^ allow us to override some default method
@@ -14,7 +14,9 @@ from django.shortcuts import get_object_or_404
 from User.models import User
 from .models import Post,Draft,Comment
 # ^ import all the models
-from .serializer import CreatePostSerializer, SkimPostSerializer, DeletePostSerializer, OpenPostSerializer,SkimCollectionSerializer,SkimBrowserSerializer,CreateDraftSerializer,DeleteDraftSerializer
+from .serializer import CreatePostSerializer, SkimPostSerializer, DeletePostSerializer, OpenPostSerializer,\
+SkimCollectionSerializer,SkimBrowserSerializer,CreateDraftSerializer,DeleteDraftSerializer,SkimDraftSerializer,\
+OpenDraftSerializer,UpdateDraftSerializer
 # ^ import all the serializers
 
 # Create your views here.
@@ -200,3 +202,28 @@ class DeleteDraftView(APIView):
         # ^ 因为设置了on_delete=CASCADE, 也同时删除了附着在帖子下面的评论
 
         return Response(request.data, status=status.HTTP_200_OK)
+
+class DraftListView(APIView):
+    serializer_class = SkimDraftSerializer
+
+    @login_required
+    def get(self,request):
+        return Response(request.user.user_draft.all(), status=status.HTTP_200_OK)
+
+class OpenDraftView(APIView):
+    serializer_class = OpenDraftSerializer
+
+    @login_required
+    def get(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+
+        id = serializer.data.get('id')
+        draft = Draft.objects.filter(id=id)
+
+        return Response(draft.data, status=status.HTTP_200_OK)
+
+class UpdateDraftAPI(generics.UpdateAPIView):
+
+    queryset = Draft.objects.all()
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = UpdateDraftSerializer

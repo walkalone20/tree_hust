@@ -63,3 +63,36 @@ class DeleteDraftSerializer(serializers.ModelSerializer):
     class Meta:
         model = Draft
         fields = ('id')
+
+class SkimDraftSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Draft
+        fields = ('id', 'drafted_by', 'draft_title', 'draft_content', 'tag')
+
+class OpenDraftSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Draft
+        fields = ('id')
+
+class UpdateDraftSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Draft
+        fields = ('draft_title', 'draft_content', 'tag')
+        extra_kwargs = {
+            'draft_title': {'required': True},
+            'tag': {'required': True},
+        }
+
+    def update(self, instance, validated_data):
+            draft = self.context['request'].draft
+
+            if draft.pk != instance.pk:
+                raise serializers.ValidationError({"authorize": "You dont have permission for this draft."})
+
+            instance.draft_title = validated_data['draft_title']
+            instance.draft_content = validated_data['draft_content']
+            instance.tag = validated_data['tag']
+
+            instance.save()
+
+            return instance
