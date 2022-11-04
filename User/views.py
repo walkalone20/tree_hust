@@ -7,7 +7,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.contrib.auth import logout
 from User.serializer import RegistrationSerializer,UpdateUserSerializer,ChangePasswordSerializer
-from Post.models import Post
 from .models import User
 
 
