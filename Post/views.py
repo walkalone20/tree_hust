@@ -3,27 +3,23 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
-from rest_framework import permissions,generics, status
-# ^ status: allows us to get access to http status 
+
+from rest_framework import permissions, generics, status, mixins
 from rest_framework.views import APIView
-# ^ allow us to override some default method
 from rest_framework.response import Response
-# ^ Response in a json format
 from django.shortcuts import get_object_or_404
-# ^ object or 404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
-# ^ filter mechanism
+
 
 from User.models import User
 from .models import Post, Draft, Comment
-# ^ import all the models
+
 
 from .serializer import CreatePostSerializer, SkimPostSerializer, DeletePostSerializer, OpenPostSerializer
 from .serializer import SkimCollectionSerializer, SkimBrowserSerializer, CreateDraftSerializer
 from .serializer import DeleteDraftSerializer, SkimDraftSerializer, OpenDraftSerializer, UpdateDraftSerializer
 from .serializer import FilterPostSerialzer, SearchPostSerialzer
-# ^ import all the serializers
 
 
 class CreatePostView(APIView):
@@ -91,6 +87,14 @@ class DeletePostView(APIView):
         return Response(request.data, status=status.HTTP_200_OK)
 
 
+class UpdatePostView(generics.UpdateAPIView):
+    queryset = Post.objects.all()
+    serializer_class = SkimPostSerializer
+    lookup_field = 'pk'
+
+
+
+
 class SkimPostView(generics.ListAPIView):
     """
         @type: API 接口, 总览所有帖子
@@ -101,9 +105,7 @@ class SkimPostView(generics.ListAPIView):
             - json格式的所有帖子的概要信息 (帖子id, 用户, 临时名, 标题, 创建时间, 标签, 评论数, 观看数, 点赞数)
     """
     queryset = Post.objects.all()
-    # ^ tell queryset what we want to return 
     serializer_class = SkimPostSerializer
-    # ^ how to convert this into some format (using PostSerializer)
 
 
 class OpenPostView(APIView):    # TODO: 显示相关评论
