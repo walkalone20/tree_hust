@@ -34,3 +34,15 @@ class OpenPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id')
+
+
+class FilterPostSerialzer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ('id', 'posted_by', 'tmp_name', 'created_at', 'post_title', 'tag', 'likes', 'watches', 'comments')
+
+
+class SearchPostSerialzer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ('id', 'posted_by', 'tmp_name', 'created_at', 'post_title', 'tag', 'likes', 'watches', 'comments')

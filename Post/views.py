@@ -10,14 +10,17 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 # ^ Response in a json format
 from django.shortcuts import get_object_or_404
+# ^ object or 404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
+# ^ filter mechanism
 
 from User.models import User
 from .models import Post
 # ^ import all the models
 from .serializer import CreatePostSerializer, SkimPostSerializer, DeletePostSerializer, OpenPostSerializer
+from .serializer import FilterPostSerialzer, SearchPostSerialzer
 # ^ import all the serializers
-
-# Create your views here.
 
 
 class CreatePostView(APIView):
@@ -27,7 +30,7 @@ class CreatePostView(APIView):
     def post(self, request, format=None):
         """
             @type: API 接口, 创建一个帖子
-            @url: /post/detailed_post
+            @url: /post/create_post
             @method: post
             @param: 
                 - post_title: 帖子的标题
@@ -47,7 +50,7 @@ class CreatePostView(APIView):
             post_content = serializer.data.get('post_content')
             tag = serializer.data.get('tag')
 
-            post = Post(post_content=post_content, tag=tag, post_title=post_title, posted_by=posted_by)
+            post = Post(post_content=post_content, tag=tag, post_title=post_title, posted_by=posted_by.get('id'))
             post.save()
 
             return Response(post.data, status=status.HTTP_201_CREATED)
@@ -62,8 +65,8 @@ class DeletePostView(APIView):
     def post(self, request, format=None):
         """
             @type: API 接口, 删除一个帖子
-            @url: /post/detailed_post
-            @method: delete
+            @url: /post/delete_post
+            @method: post
             @param: 
                 - id: 帖子的id标识
             @return:
@@ -92,8 +95,7 @@ class SkimPostView(generics.ListAPIView):
         @method: get
         @param: null
         @return:
-            - post.data: json格式的所有帖子的概要信息 (帖子id, 用户, 临时名, 标题, 创建时间, 标签, 评论数, 观看数, 点赞数)
-            - status: HTTP状态码, 成功为200 OK; 失败为400 BAD_REQUEST
+            - json格式的所有帖子的概要信息 (帖子id, 用户, 临时名, 标题, 创建时间, 标签, 评论数, 观看数, 点赞数)
     """
     queryset = Post.objects.all()
     # ^ tell queryset what we want to return 
@@ -101,12 +103,12 @@ class SkimPostView(generics.ListAPIView):
     # ^ how to convert this into some format (using PostSerializer)
 
 
-class OpenPostView(APIView):
+class OpenPostView(APIView):    # TODO: 显示相关评论
     serializer_class = OpenPostSerializer
     def get(self, request, format=None):
         """
             @type: API 接口, 点进一个帖子
-            @url: /post/detailed_post
+            @url: /post/open_post
             @method: get
             @param: 
                 - id: 帖子的id标识 (post的id)
@@ -122,9 +124,47 @@ class OpenPostView(APIView):
         return Response(post.data, status=status.HTTP_200_OK)
 
         
+class FilterPostView(generics.ListAPIView):
+    """
+        @type: API 接口, 根据tag对帖子进行筛选
+        @url: /post/filter_post
+        @method: get
+        @param: 
+            - tag: 帖子的标签
+        @return:
+            - json格式的满足tag的所有帖子信息的概览
+    """
+    queryset = Post.objects.all()
+    serializer_class = FilterPostSerialzer
+    model = Post
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['tag']
+    # ? paginate_by = 100
 
 
+class TagFilterBackend(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        if request.get('tag') is not None:
+            queryset = queryset.filter(tag=request.get('tag'))
+        return queryset
 
+
+class SearchPostView(generics.ListAPIView):
+    """
+        @type: API 接口, 根据tag和search对帖子进行筛选和对帖子内容搜索
+        @url: /post/search_post
+        @method: get
+        @param: 
+            - tag: 帖子的标签
+            - search: 对帖子标题和内容搜索的关键词
+        @return:
+            - json格式的满足tag和search(查询标题和内容)所有帖子信息的概览
+    """
+    queryset = Post.objects.all()
+    serializer_class = SearchPostSerialzer
+    model = Post
+    filter_backends = [TagFilterBackend]
+    search_fields = ['post_title', 'post_content']
 
 
 class CollectionView(APIView):

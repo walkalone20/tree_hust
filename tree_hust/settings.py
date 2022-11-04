@@ -41,8 +41,13 @@ INSTALLED_APPS = [
     "User.apps.UserConfig",
     "rest_framework",
     "imagekit",
-    'knox'
+    'knox',
+    'django-filters',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
