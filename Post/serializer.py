@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post,Draft
+from .models import Post, Draft, Comment
 from Tools import check
 
 
