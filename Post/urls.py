@@ -6,11 +6,11 @@ from .views import UpdatePostView
 
 #URLConf
 urlpatterns = [
-    path('skim_post/', SkimPostView.as_view()),
+    path('post/', SkimPostView.as_view()),
     path('create_post/', CreatePostView.as_view()),
-    path('<int:pk>/delete_post/', DeletePostView.as_view()),
-    path('<int:pk>/open_post/', OpenPostView.as_view()),
-    path('<int:pk>/update_post/', UpdatePostView.as_view()),
+    path('post/<int:pk>/delete/', DeletePostView.as_view()),
+    path('post/<int:pk>/', OpenPostView.as_view()),
+    path('post/<int:pk>/update/', UpdatePostView.as_view()),
     path('filter_post', FilterPostView.as_view()),
     path('search_post', SearchPostView.as_view()),
 
