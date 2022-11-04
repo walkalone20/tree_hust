@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
-from rest_framework import generics, status
+from rest_framework import permissions,generics, status
 # ^ status: allows us to get access to http status 
 from rest_framework.views import APIView
 # ^ allow us to override some default method
@@ -16,9 +16,12 @@ from rest_framework import filters
 # ^ filter mechanism
 
 from User.models import User
-from .models import Post
+from .models import Post, Draft, Comment
 # ^ import all the models
+
 from .serializer import CreatePostSerializer, SkimPostSerializer, DeletePostSerializer, OpenPostSerializer
+from .serializer import SkimCollectionSerializer, SkimBrowserSerializer, CreateDraftSerializer
+from .serializer import DeleteDraftSerializer, SkimDraftSerializer, OpenDraftSerializer, UpdateDraftSerializer
 from .serializer import FilterPostSerialzer, SearchPostSerialzer
 # ^ import all the serializers
 
@@ -121,9 +124,14 @@ class OpenPostView(APIView):    # TODO: 显示相关评论
         id = serializer.data.get('id')
         post = Post.objects.filter(id=id)
 
-        return Response(post.data, status=status.HTTP_200_OK)
+        if(request.user.is_authenticated):
+            post = get_object_or_404(Post, slug=request.data.get('slug'))
+            if request.user not in post.browser.all():
+                post.browser.add(request.user)
 
+        return Response(post.data, status=status.HTTP_200_OK)
         
+
 class FilterPostView(generics.ListAPIView):
     """
         @type: API 接口, 根据tag对帖子进行筛选
@@ -167,6 +175,22 @@ class SearchPostView(generics.ListAPIView):
     search_fields = ['post_title', 'post_content']
 
 
+class CollectionListView(APIView):
+    serializer_class = SkimCollectionSerializer
+
+    @login_required
+    def get(self,request):
+        return Response(request.user.user_favorite.all(), status=status.HTTP_200_OK)
+
+
+class BrowserListView(APIView):
+    serializer_class = SkimBrowserSerializer
+
+    @login_required
+    def get(self,request):
+        return Response(request.user.user_browser.all(), status=status.HTTP_200_OK)
+
+
 class CollectionView(APIView):
     bad_request_message = 'An error has occurred'
     # TODO: 需要加两个get方法
@@ -180,9 +204,78 @@ class CollectionView(APIView):
         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
 
     @login_required
-    def delete(self, request):
+    def delete(self, request):  # FIXME: delete 方法有问题
         post = get_object_or_404(Post, slug=request.data.get('slug'))
         if request.user in post.favourite.all():
             post.favourite.remove(request.user)
             return Response({'detail': 'User removed from post'}, status=status.HTTP_204_NO_CONTENT)
         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CreateDraftView(APIView):
+    serializer_class = CreateDraftSerializer
+
+    @login_required
+    def post(self, request, format=None):
+        serializer= self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            drafted_by = User.objects.filter(id=self.request.user.id)
+            draft_title = serializer.data.get('draft_title')
+            draft_content = serializer.data.get('draft_content')
+            tag = serializer.data.get('tag')
+
+            draft = Draft(draft_content=draft_content, tag=tag, draft_title=draft_title, drafted_by=drafted_by)
+            draft.save()
+
+            return Response(draft.data, status=status.HTTP_201_CREATED)
+
+        return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class DeleteDraftView(APIView):
+    serializer_class = DeleteDraftSerializer
+
+    @login_required
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+
+        id = serializer.data.get('id')
+        draft= Draft.objects.filter(id=id)
+        
+        drafted_by = draft.get('drafted_by')
+        if self.request.user.id != drafted_by.id:
+            return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
+        # ^ 判断是否有删除的权限
+
+        draft.delete()
+        # ^ 因为设置了on_delete=CASCADE, 也同时删除了附着在帖子下面的评论
+
+        return Response(request.data, status=status.HTTP_200_OK)
+
+
+class DraftListView(APIView):
+    serializer_class = SkimDraftSerializer
+
+    @login_required
+    def get(self,request):
+        return Response(request.user.user_draft.all(), status=status.HTTP_200_OK)
+
+
+class OpenDraftView(APIView):
+    serializer_class = OpenDraftSerializer
+
+    @login_required
+    def get(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+
+        id = serializer.data.get('id')
+        draft = Draft.objects.filter(id=id)
+
+        return Response(draft.data, status=status.HTTP_200_OK)
+
+
+class UpdateDraftView(generics.UpdateAPIView):
+
+    queryset = Draft.objects.all()
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = UpdateDraftSerializer
