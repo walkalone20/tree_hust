@@ -131,14 +131,14 @@ class CollectionListView(APIView):
 
     @login_required
     def get(self,request):
-        return request.user.user_favorite.all()
+        return Response(request.user.user_favorite.all(), status=status.HTTP_200_OK)
 
 class BrowserListView(APIView):
     serializer_class = SkimBrowserSerializer
 
     @login_required
     def get(self,request):
-        return request.user.user_browser.all()
+        return Response(request.user.user_browser.all(), status=status.HTTP_200_OK)
 
 class CollectionView(APIView):
     bad_request_message = 'An error has occurred'
