@@ -23,7 +23,7 @@ from .models import Post, Draft, Comment
 
 from .serializer import CreatePostSerializer, SkimPostSerializer, OpenPostSerializer
 from .serializer import SkimCollectionSerializer, SkimBrowserSerializer, CreateDraftSerializer
-from .serializer import DeleteDraftSerializer, SkimDraftSerializer, OpenDraftSerializer, UpdateDraftSerializer
+from .serializer import SkimDraftSerializer, OpenDraftSerializer, UpdateDraftSerializer
 from .serializer import UpdatePostSerializer, UpvotePostSerializer, DownvotePostSerializer
 
 from .permissions import IsOwnerOrReadOnlyPermission
@@ -124,7 +124,7 @@ class DeletePostView(generics.DestroyAPIView):
     删除一个帖子
     @url: /post/<int:pk>/delete/
     @method: delete
-    @param: id(帖子的id)
+    @param: null
     @return: 是否删除成功 
     """
     queryset = Post.objects.all()
@@ -238,7 +238,7 @@ class CreateDraftView(APIView):
     
 
 class DeleteDraftView(APIView):
-    serializer_class = DeleteDraftSerializer
+    serializer_class = SkimDraftSerializer
 
     @login_required
     def post(self, request, format=None):
@@ -257,33 +257,134 @@ class DeleteDraftView(APIView):
 
         return Response(request.data, status=status.HTTP_200_OK)
 
-
-class DraftListView(APIView):
+class SkimDraftView(generics.ListAPIView):
+    """
+        总览草稿
+        @url: /draft/
+        @method: get
+        @param: 
+        @return: 所有草稿信息的概览
+    """
+    model = Draft
+    queryset = Draft.objects.all()
     serializer_class = SkimDraftSerializer
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
-    @login_required
-    def get(self,request):
-        return Response(request.user.user_draft.all(), status=status.HTTP_200_OK)
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        request = self.request
+        return qs.filter(drafted_by=request.user)
 
 
-class OpenDraftView(APIView):
+class OpenDraftView(generics.RetrieveAPIView):
+    """
+    点进一个帖子
+    @url: /draft/<int:pk>/
+    @method: get
+    @param: null
+    @return: 帖子的所有信息和评论的信息
+    """
     serializer_class = OpenDraftSerializer
+    queryset = Post.objects.all()
+    lookup_field = 'pk'
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
-    @login_required
-    def get(self, request, format=None):
-        serializer = self.serializer_class(data=request.data)
-
-        id = serializer.data.get('id')
-        draft = Draft.objects.filter(id=id)
-
-        return Response(draft.data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        qs = super().get_queryset()
+        request = self.request
+        return qs.filter(drafted_by=request.user)
 
 
 class UpdateDraftView(generics.UpdateAPIView):
+    """
+    对草稿进行编辑
+    @url: /draft/<int:pk>/update/
+    @method: put
+    @param: draft_title, draft_content
+    @return: update后的draft的部分信息
+    """
+    queryset = Post.objects.all()
+    serializer_class = UpdateDraftSerializer
+    lookup_field = 'pk'
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        qs = super().get_queryset()
+        request = self.request
+        return qs.filter(drafted_by=request.user)
+
+
+class DeleteDraftView(generics.DestroyAPIView):
+    """
+    删除一个草稿
+    @url: /draft/<int:pk>/delete/
+    @method: delete
+    @param: null
+    @return: 是否删除成功 
+    """
+    queryset = Draft.objects.all()
+    serializer_class = SkimDraftSerializer   # ? 没搞懂什么鬼
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'pk'
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        request = self.request
+        return qs.filter(drafted_by=request.user)
+
+    def perform_destroy(self, instance):
+        return super().perform_destroy(instance)
+
+
+class UploadDraftView(generics.DestroyAPIView):
+    """
+    上传一个草稿
+    @url: /draft/<int:pk>/upload/
+    @method: delete
+    @param: null
+    @return: 是否删除成功 
+    """
 
     queryset = Draft.objects.all()
-    permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = UpdateDraftSerializer
+    serializer_class = OpenDraftSerializer   # ? 没搞懂什么鬼
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'pk'
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        request = self.request
+        return qs.filter(drafted_by=request.user)
+
+    def perform_destroy(self, instance):
+        from rest_framework import serializers
+        from Tools import check
+        from django.utils import timezone
+        request = self.request
+        post = Post()
+        post.posted_by = request.user
+
+        if instance.draft_title is None or not check(instance.draft_title):
+            raise serializers.ValidationError({"message": "标题不合法"})
+        post.post_title = instance.draft_title
+
+        if instance.draft_content is None or not check(instance.draft_content):
+            raise serializers.ValidationError({"message": "内容不合法"})
+        post.post_content = instance.post_content
+
+        if instance.tag is None:
+            raise serializers.ValidationError({"message": "标签不合法"})
+        post.tag = instance.tag
+
+        post.created_at = timezone.now()
+        post.save()
+
+        return super().perform_destroy(instance)   
+
 
 
 

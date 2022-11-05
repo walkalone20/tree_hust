@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import CreatePostView, SkimPostView, OpenPostView, DeletePostView, CollectionView
 from .views import CollectionListView, CreateDraftView, DeleteDraftView, UpdateDraftView
-from .views import BrowserListView, OpenDraftView, DraftListView
+from .views import BrowserListView, OpenDraftView, UploadDraftView, SkimDraftView
 from .views import UpdatePostView, MyPostView, CommentPostView, VotePostView, DeleteCommentView, VoteCommentView
 
 #URLConf
@@ -26,11 +26,11 @@ urlpatterns = [
 
     path('skim_browser_post/', BrowserListView.as_view()),
 
-    path('draft/', DraftListView.as_view()),
-    path('draft/<int:pk>', OpenDraftView.as_view()),
-    path('draft/create', CreateDraftView.as_view()),
-    path('draft/<int:pk>/delete', DeleteDraftView.as_view()),
-    path('draft/<int:pk>/update', UpdateDraftView.as_view()),
-    # path('draft/<int:pk>/upload', UploadDraftView.as_view()),
+    path('draft/', SkimDraftView.as_view(), name='skim-draft'),
+    path('draft/<int:pk>/', OpenDraftView.as_view(), name='open-draft'),
+    path('draft/create/', CreateDraftView.as_view(), name='create-draft'),
+    path('draft/<int:pk>/delete/', DeleteDraftView.as_view(), name='delete-draft'),
+    path('draft/<int:pk>/update/', UpdateDraftView.as_view(), name='update-draft'),
+    path('draft/<int:pk>/upload/', UploadDraftView.as_view()),
 
 ]
