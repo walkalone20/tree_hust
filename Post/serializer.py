@@ -235,7 +235,7 @@ class SkimCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('comment_under', 'last_modified', 'likes', 'comment_content', 'reply_to', 'comment_by', 'tmp_name')
-
+    
 
 class CreateCommentSerializer(serializers.ModelSerializer):
     class Meta:
