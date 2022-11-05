@@ -38,7 +38,7 @@ class RegisterAPI(generics.GenericAPIView):
             current_site=get_current_site(request).domain
             relativeLink=reverse('verify email')
             absurl='http://'+current_site+relativeLink+'?token='+str(token)
-            email_body='Hi, '+user.username+'! Use the link below to verify your email:\n'+absurl
+            email_body='您好, '+user.username+'! 请点击下面的链接来验证您的邮箱，没有验证是不能登陆的哦..\n'+absurl
 
             email=EmailMessage(subject='Verify your email',body=email_body,to=[user.email])
             email.send()
