@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.db.models.signals import post_save
 from rest_framework.authtoken.models import Token
+from django.contrib.sites.shortcuts import get_current_site
 # Create your models here.
 
 class UserManager(BaseUserManager):
@@ -55,7 +56,10 @@ def create_auth_token(sender,instance=None,created=False,**kwargs):
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
 
-    email_plaintext_message = "{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
+    email_plaintext_message = reset_password_token.user.username+"，您好！\n"+"您在 TreeHust 请\
+        求重置密码，若是您本人所为，请复制该密钥：\n"+reset_password_token.key+"\n点击下面的链接重置密码\n"+\
+        "http://127.0.0.1:8000/password_reset/confirm/"
+
 
     send_mail(
         # title:
@@ -63,7 +67,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         # message:
         email_plaintext_message,
         # from:
-        "noreply@somehost.local",
+        "821659632@qq.com",
         # to:
         [reset_password_token.user.email]
     )
