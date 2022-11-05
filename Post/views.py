@@ -24,7 +24,7 @@ from .models import Post, Draft, Comment
 from .serializer import CreatePostSerializer, SkimPostSerializer, OpenPostSerializer
 from .serializer import SkimCollectionSerializer, SkimBrowserSerializer, CreateDraftSerializer
 from .serializer import SkimDraftSerializer, OpenDraftSerializer, UpdateDraftSerializer
-from .serializer import UpdatePostSerializer, VotePostSerializer
+from .serializer import UpdatePostSerializer, UpvotePostSerializer, DownvotePostSerializer
 
 from .permissions import IsOwnerOrReadOnlyPermission
 
@@ -142,16 +142,30 @@ class DeletePostView(generics.DestroyAPIView):
         return super().perform_destroy(instance)
 
 
-class VotePostView(generics.UpdateAPIView):
+class UpvotePostSerializer(generics.UpdateAPIView):
     """
-    upvote或downvote一个帖子
-    @url: /post/<int:pk>/vote/
+    upvote一个帖子
+    @url: /post/<int:pk>/upvote/
     @method: put
     @param: likes
     @return: 
     """
     queryset = Post.objects.all()
-    serializer_class = VotePostSerializer
+    serializer_class = UpvotePostSerializer
+    lookup_field = 'pk'
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+class DownvotePostSerializer(generics.UpdateAPIView):
+    """
+    downvote一个帖子
+    @url: /post/<int:pk>/downvote/
+    @method: put
+    @param: hates
+    @return: 
+    """
+    queryset = Post.objects.all()
+    serializer_class = DownvotePostSerializer
     lookup_field = 'pk'
     # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
@@ -203,27 +217,45 @@ class CollectionView(APIView):
 
 
 
-
-####################### Draft View ##################################
-class CreateDraftView(generics.CreateAPIView):
-    """
-    创建一个草稿
-    @url: /draft/create
-    @method: post
-    @param: draft_title, draft_content, tag
-    @return: 创建成功的帖子的部分信息
-    """
-    queryset = Draft.objects.all()
+class CreateDraftView(APIView):
     serializer_class = CreateDraftSerializer
-    # authentication_classes = [TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    
+    @login_required
+    def post(self, request, format=None):
+        serializer= self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            drafted_by = User.objects.filter(id=self.request.user.id)
+            draft_title = serializer.data.get('draft_title')
+            draft_content = serializer.data.get('draft_content')
+            tag = serializer.data.get('tag')
 
-    def perform_create(self, serializer):
-        draft_title = serializer.validated_data.get('draft_title')
-        draft_content = serializer.validated_data.get('draft_content')
-        tag = serializer.validated_data.get('tag')
-        serializer.save(draft_title=draft_title, draft_content=draft_content, tag=tag)
+            draft = Draft(draft_content=draft_content, tag=tag, draft_title=draft_title, drafted_by=drafted_by)
+            draft.save()
 
+            return Response(draft.data, status=status.HTTP_201_CREATED)
+
+        return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class DeleteDraftView(APIView):
+    serializer_class = SkimDraftSerializer
+
+    @login_required
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+
+        id = serializer.data.get('id')
+        draft= Draft.objects.filter(id=id)
+        
+        drafted_by = draft.get('drafted_by')
+        if self.request.user.id != drafted_by.id:
+            return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
+        # ^ 判断是否有删除的权限
+
+        draft.delete()
+        # ^ 因为设置了on_delete=CASCADE, 也同时删除了附着在帖子下面的评论
+
+        return Response(request.data, status=status.HTTP_200_OK)
 
 class SkimDraftView(generics.ListAPIView):
     """

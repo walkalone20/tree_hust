@@ -30,14 +30,17 @@ class Post(models.Model):
     last_modified = models.DateTimeField(auto_now_add=True)   # * 发帖时间 (generated automatically)
     post_title = models.TextField(null=False)   # 帖子标题
     post_content = models.TextField(null=False)  # 帖子内容
-    likes = models.IntegerField(null=False, default=0)  # * 赞踩数 (generated automatically)
+    likes = models.IntegerField(null=False, default=0)  # * 赞数 (generated automatically)
+    hates = models.IntegerField(null=False, default=0)  # * 踩数 (generated automatically)
     watches = models.IntegerField(null=False, default=0)    # * 观看数 (generated automatically)
     stars = models.IntegerField(null=False, default=0)  # * 收藏数 (generated automatically)
     comments = models.IntegerField(null=False, default=0)   # * 评论数 (generated automatically)
     tag = models.CharField(default='s', max_length=30, choices=TAG_CHOICES)    # 帖子的标签
 
-    vote = models.ManyToManyField(User, verbose_name="vote by some user", 
-        related_name='user_vote', blank=True)   # & vote帖子
+    upvote = models.ManyToManyField(User, verbose_name="upvote by some user", 
+        related_name='user_upvote', blank=True)   # & upvote帖子
+    downvote = models.ManyToManyField(User, verbose_name="downvote by some user", 
+        related_name='user_downvote', blank=True)   # & downvote帖子
     favorite = models.ManyToManyField(User, verbose_name="collected by some user", 
         related_name='user_favorite', blank=True)  # & 收藏帖子
     browser = models.ManyToManyField(User, verbose_name="browsered by some user", 
