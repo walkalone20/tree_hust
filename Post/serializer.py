@@ -59,14 +59,15 @@ class OpenPostSerializer(serializers.ModelSerializer):
     delete_url = serializers.SerializerMethodField(method_name='get_delete_url', read_only=True)
     comment_url = serializers.SerializerMethodField(method_name='get_comment_url', read_only=True)  # TODO: 
     upvote_url = serializers.SerializerMethodField(method_name='get_upvote_url', read_only=True)
-    downvote_url = serializers.SerializerMethodField(method_name='get_downvoted_url', read_only=True)
+    downvote_url = serializers.SerializerMethodField(method_name='get_downvote_url', read_only=True)
     has_upvoted = serializers.SerializerMethodField(method_name='get_has_upvoted', read_only=True)
     has_downvoted = serializers.SerializerMethodField(method_name='get_has_downvoted', read_only=True)
 
     class Meta:
         model = Post
-        fields = ('id', 'update_url', 'delete_url', 'comment_url', 'vote_url', 'posted_by', 'tmp_name', 'post_title', 
-        'post_content', 'last_modified', 'likes', 'watches', 'comments', 'tag', 'post_comment')
+        fields = ('id', 'update_url', 'delete_url', 'comment_url', 'upvote_url', 'downvote_url', 'has_upvoted',
+           'has_downvoted', 'posted_by', 'tmp_name','post_title', 'post_content', 'last_modified', 'likes', 'hates',
+           'watches', 'comments', 'tag', 'post_comment')
 
     def get_update_url(self, obj):
         request = self.context['request']
@@ -112,7 +113,7 @@ class OpenPostSerializer(serializers.ModelSerializer):
         request = self.context['request']
         if request == None:
             return None
-        if not request.is_authenticated:
+        if not request.user.is_authenticated:
             return False
         
         upvote = obj.upvote.all()
@@ -124,7 +125,7 @@ class OpenPostSerializer(serializers.ModelSerializer):
         request = self.context['request']
         if request == None:
             return None
-        if not request.is_authenticated:
+        if not request.user.is_authenticated:
             return False
 
         downvote = obj.downvote.all()
@@ -191,7 +192,7 @@ class UpvotePostSerializer(serializers.ModelSerializer):
 class DownvotePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ('likes', )
+        fields = ('hates', )
 
     def update(self, instance, validated_data):
         request = self.context['request'] 
@@ -281,9 +282,9 @@ class UpvoteCommentSerializer(serializers.ModelSerializer):
         elif request.user in downvote:
             instance.downvote.remove(request.user)
             instance.hates-=1
+            instance.upvote.add(request.user)
+            instance.likes+=1
         
-        instance.upvote.add(request.user)
-        instance.likes+=1
         instance.save()
 
         return instance
@@ -307,10 +308,11 @@ class DownvoteCommentSerializer(serializers.ModelSerializer):
         elif request.user in upvote:
             instance.upvote.remove(request.user)
             instance.likes-=1
-        
-        instance.downvote.add(request.user)
-        instance.hates+=1
+            instance.downvote.add(request.user)
+            instance.hates+=1
         instance.save()
+        
+        
 
         return instance
 
