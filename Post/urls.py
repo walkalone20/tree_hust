@@ -31,6 +31,6 @@ urlpatterns = [
     path('draft/create/', CreateDraftView.as_view(), name='create-draft'),
     path('draft/<int:pk>/delete/', DeleteDraftView.as_view(), name='delete-draft'),
     path('draft/<int:pk>/update/', UpdateDraftView.as_view(), name='update-draft'),
-    path('draft/<int:pk>/upload/', UploadDraftView.as_view()),
+    path('draft/<int:pk>/upload/', UploadDraftView.as_view(), name='upload-draft'),
 
 ]

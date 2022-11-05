@@ -286,7 +286,7 @@ class OpenDraftView(generics.RetrieveAPIView):
     @return: 帖子的所有信息和评论的信息
     """
     serializer_class = OpenDraftSerializer
-    queryset = Post.objects.all()
+    queryset = Draft.objects.all()
     lookup_field = 'pk'
     # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
@@ -305,7 +305,7 @@ class UpdateDraftView(generics.UpdateAPIView):
     @param: draft_title, draft_content
     @return: update后的draft的部分信息
     """
-    queryset = Post.objects.all()
+    queryset = Draft.objects.all()
     serializer_class = UpdateDraftSerializer
     lookup_field = 'pk'
     # authentication_classes = [TokenAuthentication]
@@ -374,7 +374,7 @@ class UploadDraftView(generics.DestroyAPIView):
 
         if instance.draft_content is None or not check(instance.draft_content):
             raise serializers.ValidationError({"message": "内容不合法"})
-        post.post_content = instance.post_content
+        post.post_content = instance.draft_content
 
         if instance.tag is None:
             raise serializers.ValidationError({"message": "标签不合法"})
