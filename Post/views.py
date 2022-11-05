@@ -24,7 +24,7 @@ from .models import Post, Draft, Comment
 from .serializer import CreatePostSerializer, SkimPostSerializer, OpenPostSerializer
 from .serializer import SkimCollectionSerializer, SkimBrowserSerializer, CreateDraftSerializer
 from .serializer import DeleteDraftSerializer, SkimDraftSerializer, OpenDraftSerializer, UpdateDraftSerializer
-from .serializer import FilterPostSerialzer, SearchPostSerialzer
+from .serializer import SearchPostSerialzer
 
 from .permissions import IsOwnerOrReadOnlyPermission
 
@@ -55,25 +55,6 @@ class CreatePostView(generics.CreateAPIView):
     # authentication_classes = [permissions.IsAuthenticated]
     # permission_classes = [IsOwnerOrReadOnlyPermission]
 
-# class oldCreatePostView(APIView):
-#     serializer_class = CreatePostSerializer
-
-#     @login_required # FIXME
-#     def post(self, request, format=None):
-#         serializer= self.serializer_class(data=request.data)
-#         if serializer.is_valid():
-#             posted_by = User.objects.filter(id=self.request.user.id)
-#             post_title = serializer.data.get('post_title')
-#             post_content = serializer.data.get('post_content')
-#             tag = serializer.data.get('tag')
-
-#             post = Post(post_content=post_content, tag=tag, post_title=post_title, posted_by=posted_by.get('id'))
-#             post.save()
-
-#             return Response(post.data, status=status.HTTP_201_CREATED)
-
-#         return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
-
 
 class SkimPostView(generics.ListAPIView):
     """
@@ -101,35 +82,25 @@ class OpenPostView(generics.RetrieveAPIView):
     serializer_class = OpenPostSerializer
     queryset = Post.objects.all()
     lookup_field = 'pk'
+    # TODO: 显示相关评论
+    # TODO: 增加浏览记录
     
     
-# class oldOpenPostView(APIView):    # TODO: 显示相关评论
-#     serializer_class = OpenPostSerializer
+class UpdatePostView(generics.UpdateAPIView):
+    """
+        根据tag对帖子进行编辑
+        @url: /post/<int:pk>/update
+        @method: put
+        @param: post_title, post_content, last_modified
+        @return:
+            - json格式的满足tag的所有帖子信息的概览
+    """
+    queryset = Post.objects.all()
+    serializer_class = SkimPostSerializer
+    lookup_field = 'pk'
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
-#     def get(self, request, pk = None, format=None):
-#         """
-          
-#         """
-#         if pk == None:
-#             return Response({"detailed": "url error!"}, status=status.HTTP_400_BAD_REQUEST)
-
-#         post = Post.objects.filter(id=pk)
-#         serializer = self.serializer_class(data=post)
-
-#         serializer.is_valid(raise_exception=True)
-
-#         # if request.user.is_authenticated:
-#         #     if request.user not in post.browser.all():
-#         #         post.browser.add(request.user)
-#         #         post.update()
-
-#         # post.update()
-#         # TODO: 增加浏览记录
-#         # if(request.user.is_authenticated):
-#         #     if request.user not in post.browser.all():
-#         #         post.browser.add(request.user)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-    
 
 class DeletePostView(generics.DestroyAPIView):
     """
@@ -151,40 +122,6 @@ class DeletePostView(generics.DestroyAPIView):
     def perform_destroy(self, instance):
         return super().perform_destroy(instance)
 
-
-# class oldDeletePostView(APIView):
-#     serializer_class = DeletePostSerializer
-
-#     def delete(self, request, pk=None, format=None):
-
-#         serializer = self.serializer_class(data=request.data)
-
-#         post= Post.objects.filter(id=pk)
-        
-#         posted_by = post.get('posted_by')
-#         if not request.user.is_authenticated or self.request.user != posted_by:
-#             return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
-#         # ^ 判断是否有删除的权限
-
-#         post.delete()
-#         # ^ 因为设置了on_delete=CASCADE, 也同时删除了附着在帖子下面的评论
-
-#         return Response(request.data, status=status.HTTP_200_OK)
-
-
-class UpdatePostView(generics.UpdateAPIView):
-    """
-        根据tag对帖子进行编辑
-        @url: /post/<int:pk>/update
-        @method: put
-        @param: post_title, post_content, last_modified
-        @return:
-            - json格式的满足tag的所有帖子信息的概览
-    """
-    queryset = Post.objects.all()
-    serializer_class = SkimPostSerializer
-    lookup_field = 'pk'
-        
 
 class FilterPostView(generics.ListAPIView):
     """
@@ -332,3 +269,73 @@ class UpdateDraftView(generics.UpdateAPIView):
     queryset = Draft.objects.all()
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UpdateDraftSerializer
+
+
+
+# class oldCreatePostView(APIView):
+#     serializer_class = CreatePostSerializer
+
+#     @login_required # FIXME
+#     def post(self, request, format=None):
+#         serializer= self.serializer_class(data=request.data)
+#         if serializer.is_valid():
+#             posted_by = User.objects.filter(id=self.request.user.id)
+#             post_title = serializer.data.get('post_title')
+#             post_content = serializer.data.get('post_content')
+#             tag = serializer.data.get('tag')
+
+#             post = Post(post_content=post_content, tag=tag, post_title=post_title, posted_by=posted_by.get('id'))
+#             post.save()
+
+#             return Response(post.data, status=status.HTTP_201_CREATED)
+
+#         return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
+
+
+# class oldDeletePostView(APIView):
+#     serializer_class = DeletePostSerializer
+
+#     def delete(self, request, pk=None, format=None):
+
+#         serializer = self.serializer_class(data=request.data)
+
+#         post= Post.objects.filter(id=pk)
+        
+#         posted_by = post.get('posted_by')
+#         if not request.user.is_authenticated or self.request.user != posted_by:
+#             return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
+#         # ^ 判断是否有删除的权限
+
+#         post.delete()
+#         # ^ 因为设置了on_delete=CASCADE, 也同时删除了附着在帖子下面的评论
+
+#         return Response(request.data, status=status.HTTP_200_OK)
+
+       
+# class oldOpenPostView(APIView):    
+#     serializer_class = OpenPostSerializer
+
+#     def get(self, request, pk = None, format=None):
+#         """
+          
+#         """
+#         if pk == None:
+#             return Response({"detailed": "url error!"}, status=status.HTTP_400_BAD_REQUEST)
+
+#         post = Post.objects.filter(id=pk)
+#         serializer = self.serializer_class(data=post)
+
+#         serializer.is_valid(raise_exception=True)
+
+#         # if request.user.is_authenticated:
+#         #     if request.user not in post.browser.all():
+#         #         post.browser.add(request.user)
+#         #         post.update()
+
+#         # post.update()
+#         
+#         # if(request.user.is_authenticated):
+#         #     if request.user not in post.browser.all():
+#         #         post.browser.add(request.user)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+    

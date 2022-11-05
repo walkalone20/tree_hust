@@ -58,10 +58,10 @@ class OpenPostSerializer(serializers.ModelSerializer):
     # comment = serializers.RelatedField(source='comment', many=True)
     update_url = serializers.SerializerMethodField(method_name='get_update_url', read_only=True)
     delete_url = serializers.SerializerMethodField(method_name='get_delete_url', read_only=True)
-    comment_url = serializers.SerializerMetaclass(method_name = 'get_comment_url', read_only=True)  # TODO
+    comment_url = serializers.SerializerMethodField(method_name = 'get_comment_url', read_only=True)
     class Meta:
         model = Post
-        fields = ('id', 'update_url', 'delete_url', 'posted_by', 'tmp_name', 'post_title', 
+        fields = ('id', 'update_url', 'delete_url', 'comment_url', 'posted_by', 'tmp_name', 'post_title', 
         'post_content', 'last_modified', 'likes', 'watches', 'comments', 'tag', 'post_comment')
 
     def get_update_url(self, obj):
@@ -78,6 +78,9 @@ class OpenPostSerializer(serializers.ModelSerializer):
             return None
         if request.user.is_authenticated and request.user == obj.getattr('posted_by'):
             return reverse('delete-post', kwargs={"pk": obj.pk}, request=request)
+        return None
+
+    def get_comment_url(self, obj):  # TODO
         return None
 
 
