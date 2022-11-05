@@ -45,11 +45,19 @@ class Post(models.Model):
 
 
 class Draft(models.Model):
+    TAG_CHOICES = [
+        ('s', 'life is meaningless'),
+        ('h', 'I am a procrastinator'),
+        ('i', 'want to die'),
+        ('t', 'venomous!'),
+        ('a', 'I am a piece of shit'),
+        ('b', 'I am the black sheep'),
+    ]
     drafted_by = models.ForeignKey(User, on_delete=models.CASCADE,
         related_name='user_draft', verbose_name="draft drafted by some user")  # & 编辑草稿的人
     draft_title = models.TextField(null=False)  # 草稿标题
-    draft_content = models.TextField()  # 草稿内容
-    tag = models.CharField(default='default', max_length=30) # 草稿标签
+    draft_content = models.TextField(null=True, blank=True)  # 草稿内容
+    tag = models.CharField(default='s', max_length=30, choices=TAG_CHOICES) # 草稿标签
 
 
 class Comment(models.Model):
