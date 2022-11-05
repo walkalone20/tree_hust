@@ -1,5 +1,12 @@
 from tkinter.ttk import Style
 from rest_framework import serializers
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import status
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage
+from django.urls import reverse
+from django.conf import settings
 
 from .models import User
 
@@ -70,6 +77,18 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         if User.objects.exclude(pk=user.pk).filter(email=value).exists():
             raise serializers.ValidationError({"email": "This email is already in use."})
+        
+        if user.email!=value:
+            token=RefreshToken.for_user(user)
+
+            current_site=get_current_site(self.context['request']).domain
+            relativeLink=reverse('verify email')
+            absurl='http://'+current_site+relativeLink+'?token='+str(token)
+            email_body='Hi, '+user.username+'! Use the link below to verify your new email:\n'+absurl
+
+            email=EmailMessage(subject='Verify your email',body=email_body,to=[value])
+            email.send()
+
         return value
 
     def validate_username(self, value):
