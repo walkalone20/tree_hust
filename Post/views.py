@@ -24,7 +24,7 @@ from .models import Post, Draft, Comment
 from .serializer import CreatePostSerializer, SkimPostSerializer, OpenPostSerializer
 from .serializer import SkimCollectionSerializer, SkimBrowserSerializer, CreateDraftSerializer
 from .serializer import DeleteDraftSerializer, SkimDraftSerializer, OpenDraftSerializer, UpdateDraftSerializer
-from .serializer import UpdatePostSerializer, VotePostSerializer
+from .serializer import UpdatePostSerializer, UpvotePostSerializer, DownvotePostSerializer
 
 from .permissions import IsOwnerOrReadOnlyPermission
 
@@ -142,16 +142,30 @@ class DeletePostView(generics.DestroyAPIView):
         return super().perform_destroy(instance)
 
 
-class VotePostView(generics.UpdateAPIView):
+class UpvotePostSerializer(generics.UpdateAPIView):
     """
-    upvote或downvote一个帖子
-    @url: /post/<int:pk>/vote/
+    upvote一个帖子
+    @url: /post/<int:pk>/upvote/
     @method: put
     @param: likes
     @return: 
     """
     queryset = Post.objects.all()
-    serializer_class = VotePostSerializer
+    serializer_class = UpvotePostSerializer
+    lookup_field = 'pk'
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+class DownvotePostSerializer(generics.UpdateAPIView):
+    """
+    downvote一个帖子
+    @url: /post/<int:pk>/downvote/
+    @method: put
+    @param: hates
+    @return: 
+    """
+    queryset = Post.objects.all()
+    serializer_class = DownvotePostSerializer
     lookup_field = 'pk'
     # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
@@ -202,9 +216,10 @@ class CollectionView(APIView):
         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class CreateDraftView(APIView):
     serializer_class = CreateDraftSerializer
-
+    
     @login_required
     def post(self, request, format=None):
         serializer= self.serializer_class(data=request.data)

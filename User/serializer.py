@@ -101,16 +101,11 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
 
         if user.pk != instance.pk:
-            raise serializers.ValidationError({"authorize": "You dont have permission for this user."})
+            raise serializers.ValidationError({"authorize": "You don't have permission for this user."})
 
         instance.email = validated_data['email']
         instance.username = validated_data['username']
 
         instance.save()
 
-        return Response({
-            'notion':"We've successfully reset your email address, but it hasn't been verified yet. If you don't\
-                verify it in time, you cannot login to Treehust next time.",
-            'new email':instance.email,
-            'new username':instance.username
-        },status=status.HTTP_200_OK)
+        return instance
