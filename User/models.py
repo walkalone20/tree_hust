@@ -34,6 +34,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     username=models.CharField(max_length=30,unique=True)
     date_joined=models.DateTimeField(verbose_name='date joined',auto_now_add=True)
     last_login=models.DateTimeField(verbose_name='date joined',auto_now=True)
+    is_verified=models.BooleanField(default=False)
     is_admin=models.BooleanField(default=False)
     is_active=models.BooleanField(default=True)
     is_staff=models.BooleanField(default=False)
