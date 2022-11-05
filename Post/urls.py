@@ -15,8 +15,8 @@ urlpatterns = [
     path('post/<int:pk>/update/', UpdatePostView.as_view(), name='update-post'),
 
     # * upvote and downvote on post
-    path('post/<int:pk>/upvote/', UpvotePostView.as_view(), name='Upvote-post'),
-    path('post/<int:pk>/downvote/', DownvotePostView.as_view(), name='Downvote-post'),
+    path('post/<int:pk>/upvote/', UpvotePostView.as_view(), name='upvote-post'),
+    path('post/<int:pk>/downvote/', DownvotePostView.as_view(), name='downvote-post'),
 
     # * post collections
     path('collect_post/', CollectionView.as_view()),
@@ -27,8 +27,8 @@ urlpatterns = [
     
     # * comment implementation
     path('post/<int:pk>/comment/', CommentPostView.as_view(), name='comment-post'),
-    path('post/<int:pk>/comment/<int:on>/delete', DeleteCommentView.as_view(), name='delete-comment'),
-    path('post/<int:pk>/comment/<int:on>/vote', VoteCommentView.as_view(), name='vote-comment'),
+    path('post/<int:pk>/comment/<int:on>/delete/', DeleteCommentView.as_view(), name='delete-comment'),
+    path('post/<int:pk>/comment/<int:on>/upvote/', VoteCommentView.as_view(), name='upvote-comment'),
 
     # * draft implementation
     path('draft/', SkimDraftView.as_view(), name='skim-draft'),

@@ -395,7 +395,7 @@ class UploadDraftView(generics.DestroyAPIView):
 # class oldCreatePostView(APIView):
 #     serializer_class = CreatePostSerializer
 
-#     @login_required # FIXME
+#     @login_required 
 #     def post(self, request, format=None):
 #         serializer= self.serializer_class(data=request.data)
 #         if serializer.is_valid():

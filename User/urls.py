@@ -3,7 +3,7 @@ from . import views
 
 #URLConf
 urlpatterns = [
-    path('register/', views.RegisterAPI.as_view(),name="registermynigga"), # TODO: nigga!
+    path('register/', views.RegisterAPI.as_view(),name="register"),
     path('login/', views.CustomAuthTokenAPI.as_view(),name="login"),
     path('verify_email',views.VerifyEmail.as_view(),name='verify email'),
     path('logout/', views.LogoutAPI.as_view(), name='logout'),
