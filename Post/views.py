@@ -217,7 +217,8 @@ class CommentPostView(generics.CreateAPIView):
 class DeleteCommentView(generics.DestroyAPIView):
     pass
 
-
+class UpvoteCommentView(generics.UpdateAPIView):
+    pass
 
 
 ##################################### Draft View ############################################

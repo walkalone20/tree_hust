@@ -3,7 +3,7 @@ from .views import CreatePostView, SkimPostView, OpenPostView, DeletePostView, C
 from .views import CollectionListView, CreateDraftView, DeleteDraftView, UpdateDraftView
 from .views import BrowserListView, OpenDraftView, UploadDraftView, SkimDraftView
 from .views import UpdatePostView, MyPostView, CommentPostView, UpvotePostView, DownvotePostView
-from .views import DeleteCommentView, VoteCommentView
+from .views import DeleteCommentView, UpvoteCommentView
 #URLConf
 urlpatterns = [
     # * CRUD on post
@@ -28,7 +28,7 @@ urlpatterns = [
     # * comment implementation
     path('post/<int:pk>/comment/', CommentPostView.as_view(), name='comment-post'),
     path('post/<int:pk>/comment/<int:on>/delete/', DeleteCommentView.as_view(), name='delete-comment'),
-    path('post/<int:pk>/comment/<int:on>/upvote/', VoteCommentView.as_view(), name='upvote-comment'),
+    path('post/<int:pk>/comment/<int:on>/upvote/', UpvoteCommentView.as_view(), name='upvote-comment'),
 
     # * draft implementation
     path('draft/', SkimDraftView.as_view(), name='skim-draft'),
