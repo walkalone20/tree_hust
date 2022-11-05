@@ -13,8 +13,10 @@ urlpatterns = [
     path('post/<int:pk>/delete/', DeletePostView.as_view(), name='delete-post'),
     path('post/<int:pk>/', OpenPostView.as_view(), name='open-post'),
     path('post/<int:pk>/update/', UpdatePostView.as_view(), name='update-post'),
+
     path('post/<int:pk>/upvote/', UpvotePostView.as_view(), name='Upvote-post'),
     path('post/<int:pk>/downvote/', DownvotePostView.as_view(), name='Downvote-post'),
+
 
     path('post/<int:pk>/comment/', CommentPostView.as_view(), name='comment-post'),
     path('post/<int:pk>/comment/<int:on>/delete', DeleteCommentView.as_view(), name='delete-comment'),

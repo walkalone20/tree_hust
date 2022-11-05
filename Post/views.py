@@ -28,7 +28,7 @@ from .serializer import UpdatePostSerializer, UpvotePostSerializer, DownvotePost
 
 from .permissions import IsOwnerOrReadOnlyPermission
 
-
+##################################### Post View ################################################
 class CreatePostView(generics.CreateAPIView):
     """
     创建一个帖子
@@ -171,22 +171,6 @@ class DownvotePostView(generics.UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class CommentPostView(generics.CreateAPIView):
-    pass
-
-class DeleteCommentView(generics.DestroyAPIView):
-    pass
-
-class VoteCommentView(generics.DestroyAPIView):
-    pass
-
-class CollectionListView(APIView):
-    serializer_class = SkimCollectionSerializer
-
-    def get(self,request):
-        return Response(request.user.user_favorite.all(), status=status.HTTP_200_OK)
-
-
 class BrowserListView(APIView):
     serializer_class = SkimBrowserSerializer
 
@@ -216,7 +200,27 @@ class CollectionView(APIView):
         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class CollectionListView(APIView):
+    serializer_class = SkimCollectionSerializer
 
+    def get(self,request):
+        return Response(request.user.user_favorite.all(), status=status.HTTP_200_OK)
+
+
+
+
+##################################### Comment View #####################################
+class CommentPostView(generics.CreateAPIView):
+    pass
+
+
+class DeleteCommentView(generics.DestroyAPIView):
+    pass
+
+
+
+
+##################################### Draft View ############################################
 class CreateDraftView(APIView):
     serializer_class = CreateDraftSerializer
     
