@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import Post, Draft, Comment
 from Tools import check
+from rest_framework.reverse import reverse
+from django.utils import timezone
 
 
 class CreatePostSerializer(serializers.ModelSerializer):
@@ -8,72 +10,117 @@ class CreatePostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ('post_title', 'post_content', 'tag')
 
+    def validate_post_title(self, value):
+        if not check(value):
+            raise serializers.ValidationError({'message': '标题不合法'})
+
+        return value
+
+    def validate_post_content(self, value):
+        if not check(value):
+            raise serializers.ValidationError({'message': '内容不合法'})
+
+        return value
+
     def create(self, validated_data):
         request = self.context.get('request')
         post = Post()
         post.post_title = validated_data['post_title']
-        post.post_content = validated_data['post_content']
-        if not check(post.post_title):
-            raise serializers.ValidationError({'post_title': '标题不合法'})        
-        if not check(post.post_content):
-            raise serializers.ValidationError({'post_content': '内容不合法'})
-            
-        post.posted_by = request.user
-        post.save()
-        return post
+        post.post_content = validated_data['post_content']   
+        post.tag = validated_data['tag']
 
-        # if request.user.is_authenticated:
-        #     post.posted_by = request.user
-        #     post.save()
-        #     return post
-        # else:
-        #     raise serializers.ValidationError({"detailed": "please login first!"})
+        if request.user.is_authenticated:
+            post.posted_by = request.user
+            post.save()
+            return post
+        else:
+            raise serializers.ValidationError({"detailed": "please login first!"})
+    
+    # def validate(self, attrs):
+    #     request = self.context['request']
+    #     if not request.user.is_authenticated:
+    #         raise serializers.ValidationError({"message": "当前尚未登陆"})
 
-
-class OpenPostSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Post
-        fields = ('id', 'posted_by', 'tmp_name', 'post_title', 'post_content', 'created_at', 'likes',
-            'watches', 'comments', 'tag')
-
-
-
-
-class DeletePostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = ('id')
+    #     return super().validate(attrs)
 
 
 class SkimPostSerializer(serializers.ModelSerializer):
+    open_url = serializers.HyperlinkedIdentityField(view_name='open-post', lookup_field='pk', read_only=True)
     class Meta:
         model = Post
-        fields = ('id', 'posted_by', 'tmp_name', 'created_at', 'post_title', 'tag', 'likes', 'watches', 'comments')
+        fields = ('id', 'open_url', 'posted_by', 'tmp_name', 'last_modified',
+         'post_title', 'tag', 'likes', 'watches', 'comments')
 
 
-class FilterPostSerialzer(serializers.ModelSerializer):
+class OpenPostSerializer(serializers.ModelSerializer):
+    # comment = serializers.RelatedField(source='comment', many=True)
+    update_url = serializers.SerializerMethodField(method_name='get_update_url', read_only=True)
+    delete_url = serializers.SerializerMethodField(method_name='get_delete_url', read_only=True)
+    comment_url = serializers.SerializerMethodField(method_name = 'get_comment_url', read_only=True)
     class Meta:
         model = Post
-        fields = ('id', 'posted_by', 'tmp_name', 'created_at', 'post_title', 'tag', 'likes', 'watches', 'comments')
+        fields = ('id', 'update_url', 'delete_url', 'comment_url', 'posted_by', 'tmp_name', 'post_title', 
+        'post_content', 'last_modified', 'likes', 'watches', 'comments', 'tag', 'post_comment')
+
+    def get_update_url(self, obj):
+        request = self.context['request']
+        if request is None:
+            return None
+        if request.user.is_authenticated and request.user == obj.posted_by:
+            return reverse('update-post', kwargs={"pk": obj.pk}, request=request)
+        return None
+
+    def get_delete_url(self, obj):
+        request = self.context['request']
+        if request is None:
+            return None
+        if request.user.is_authenticated and request.user == obj.posted_by:
+            return reverse('delete-post', kwargs={"pk": obj.pk}, request=request)
+        return None
+
+    def get_comment_url(self, obj):  # TODO
+        return None
 
 
-class SearchPostSerialzer(serializers.ModelSerializer):
+class UpdatePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ('id', 'posted_by', 'tmp_name', 'created_at', 'post_title', 'tag', 'likes', 'watches', 'comments')
+        fields = ('post_title', 'post_content')
+
+    def validate_post_title(self, value):
+        if not check(value):
+            raise serializers.ValidationError({'message': '标题不合法'})
+
+        return value
+
+    def validate_post_content(self, value):
+        if not check(value):
+            raise serializers.ValidationError({'message': '内容不合法'})
+
+        return value
+
+    def update(self, instance, validated_data):
+        request = self.context['request']
+        if not request.user.is_authenticated:
+            raise serializers.ValidationError({"message": "当前尚未登陆"})
+        if request.user != instance.posted_by:
+            raise serializers.ValidationError({"message": "没有权限"})
+        
+        validated_data['last_modified'] = timezone.now()
+
+        return super().update(instance, validated_data)
 
 
 class SkimCollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ('id', 'posted_by', 'tmp_name', 'created_at', 'post_title', 'tag', 'likes', 'watches', 'comments')
+        fields = ('id', 'posted_by', 'tmp_name', 'last_modified', 'post_title', 'tag', 'likes', 'watches', 'comments')
 
 
 class SkimBrowserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ('id', 'posted_by', 'tmp_name', 'created_at', 'post_title', 'tag', 'likes', 'watches', 'comments')
+        fields = ('id', 'posted_by', 'tmp_name', 'last_modified', 'post_title', 'tag', 'likes', 'watches', 'comments')
 
 
 class CreateDraftSerializer(serializers.ModelSerializer):
@@ -123,3 +170,20 @@ class UpdateDraftSerializer(serializers.ModelSerializer):
 
             return instance
 
+
+# class DeletePostSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Post
+#         fields = ('id')
+
+
+# class FilterPostSerialzer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Post
+#         fields = ('id', 'posted_by', 'tmp_name', 'last_modified', 'post_title', 'tag', 'likes', 'watches', 'comments')
+
+
+# class SearchPostSerialzer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Post
+#         fields = ('id', 'posted_by', 'tmp_name', 'last_modified', 'post_title', 'tag', 'likes', 'watches', 'comments')
