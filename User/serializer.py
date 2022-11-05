@@ -1,5 +1,12 @@
 from tkinter.ttk import Style
 from rest_framework import serializers
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import status
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage
+from django.urls import reverse
+from django.conf import settings
 
 from .models import User
 
@@ -62,16 +69,26 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email')
+        fields = ('username', 'email')
         extra_kwargs = {
-            'first_name': {'required': True},
-            'last_name': {'required': True},
         }
 
     def validate_email(self, value):
         user = self.context['request'].user
         if User.objects.exclude(pk=user.pk).filter(email=value).exists():
             raise serializers.ValidationError({"email": "This email is already in use."})
+        
+        if user.email!=value:
+            token=RefreshToken.for_user(user)
+
+            current_site=get_current_site(self.context['request']).domain
+            relativeLink=reverse('verify email')
+            absurl='http://'+current_site+relativeLink+'?token='+str(token)
+            email_body='Hi, '+user.username+'! Use the link below to verify your new email:\n'+absurl
+
+            email=EmailMessage(subject='Verify your email',body=email_body,to=[value])
+            email.send()
+
         return value
 
     def validate_username(self, value):
@@ -86,11 +103,14 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         if user.pk != instance.pk:
             raise serializers.ValidationError({"authorize": "You dont have permission for this user."})
 
-        instance.first_name = validated_data['first_name']
-        instance.last_name = validated_data['last_name']
         instance.email = validated_data['email']
         instance.username = validated_data['username']
 
         instance.save()
 
-        return instance
+        return Response({
+            'notion':"We've successfully reset your email address, but it hasn't been verified yet. If you don't\
+                verify it in time, you cannot login to Treehust next time.",
+            'new email':instance.email,
+            'new username':instance.username
+        },status=status.HTTP_200_OK)

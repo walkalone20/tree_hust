@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     "Post.apps.PostConfig",
     "User.apps.UserConfig",
     "rest_framework",
-    "imagekit",
     'django_filters',
 ]
 
@@ -122,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Shanghai"
 
 USE_I18N = True
 
@@ -149,4 +148,25 @@ REST_FRAMEWORK = {
     ]
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# EMAIL_USE_TLS = True  
+# EMAIL_HOST = 'smtp.gmail.com'  
+# EMAIL_HOST_USER = 'youremail@gmail.com'  
+# EMAIL_HOST_PASSWORD = 'yourpassword'  
+# EMAIL_PORT = 587  
+
+# PASSWORD_RESET_TIMEOUT=14400
+
+# qq POP3/SMTP 配置
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_PORT = 25
+#发送邮件的邮箱
+EMAIL_HOST_USER = '821659632@qq.com'
+#在邮箱中设置的客户端授权密码
+EMAIL_HOST_PASSWORD = 'cqtivvygalesbdab' 
+EMAIL_USE_TLS = True  # 这里必须是 True，否则发送不成功
+#收件人看到的发件人
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
