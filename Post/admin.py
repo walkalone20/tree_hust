@@ -7,7 +7,7 @@ admin.site.register(Comment)
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display=['id','posted_by_username','post_title','likes','upvoted_by','downvoted_by']
+    list_display=['id','posted_by_username','post_title','likes', 'hates', 'upvoted_by','downvoted_by']
 
     def posted_by_username(self, request):
         return request.posted_by.username

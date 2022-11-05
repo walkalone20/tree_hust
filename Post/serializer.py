@@ -183,8 +183,11 @@ class UpvotePostSerializer(serializers.ModelSerializer):
             instance.downvote.remove(request.user)
             instance.hates-=1
         
-        instance.upvote.add(request.user)
-        instance.likes+=1
+            instance.upvote.add(request.user)
+            instance.likes+=1
+        else:
+            instance.upvote.add(request.user)
+            instance.likes+=1
         instance.save()
 
         return instance
@@ -210,8 +213,11 @@ class DownvotePostSerializer(serializers.ModelSerializer):
             instance.upvote.remove(request.user)
             instance.likes-=1
         
-        instance.downvote.add(request.user)
-        instance.hates+=1
+            instance.downvote.add(request.user)
+            instance.hates+=1
+        else:
+            instance.downvote.add(request.user)
+            instance.hates+=1
         instance.save()
 
         return instance
@@ -270,6 +276,9 @@ class UpvoteCommentSerializer(serializers.ModelSerializer):
             instance.hates-=1
             instance.upvote.add(request.user)
             instance.likes+=1
+        else:
+            instance.upvote.add(request.user)
+            instance.likes+=1
         
         instance.save()
 
@@ -296,8 +305,12 @@ class DownvoteCommentSerializer(serializers.ModelSerializer):
             instance.likes-=1
             instance.downvote.add(request.user)
             instance.hates+=1
-        instance.save()
+        else:
+            instance.downvote.add(request.user)
+            instance.hates+=1
 
+        instance.save()
+        
         return instance
 
 ############################## Draft Serializer##########################
