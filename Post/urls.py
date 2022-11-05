@@ -1,8 +1,8 @@
 from django.urls import path
 from .views import CreatePostView, SkimPostView, OpenPostView, DeletePostView, CollectionView
 from .views import CollectionListView, CreateDraftView, DeleteDraftView, UpdateDraftView
-from .views import BrowserListView, OpenDraftView, DraftListView, FilterPostView, SearchPostView
-from .views import UpdatePostView, MyPostView
+from .views import BrowserListView, OpenDraftView, DraftListView
+from .views import UpdatePostView, MyPostView, CommentPostView, VotePostView, DeleteCommentView, VoteCommentView
 
 #URLConf
 urlpatterns = [
@@ -13,9 +13,11 @@ urlpatterns = [
     path('post/<int:pk>/delete/', DeletePostView.as_view(), name='delete-post'),
     path('post/<int:pk>/', OpenPostView.as_view(), name='open-post'),
     path('post/<int:pk>/update/', UpdatePostView.as_view(), name='update-post'),
+    path('post/<int:pk>/vote/', VotePostView.as_view(), name='vote-post'),
 
-    path('post/filter/', FilterPostView.as_view(), name='filter-post'),
-    path('post/search/', SearchPostView.as_view(), name='search-post'),
+    path('post/<int:pk>/comment/', CommentPostView.as_view(), name='comment-post'),
+    path('post/<int:pk>/comment/<int:on>/delete', DeleteCommentView.as_view(), name='delete-comment'),
+    path('post/<int:pk>/comment/<int:on>/vote', VoteCommentView.as_view(), name='vote-comment'),
 
 
     path('collect_post/', CollectionView.as_view()),
