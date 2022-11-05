@@ -32,8 +32,12 @@ class Post(models.Model):
     post_content = models.TextField(null=False)  # 帖子内容
     likes = models.IntegerField(null=False, default=0)  # * 赞踩数 (generated automatically)
     watches = models.IntegerField(null=False, default=0)    # * 观看数 (generated automatically)
+    stars = models.IntegerField(null=False, default=0)  # * 收藏数 (generated automatically)
     comments = models.IntegerField(null=False, default=0)   # * 评论数 (generated automatically)
     tag = models.CharField(default='s', max_length=30, choices=TAG_CHOICES)    # 帖子的标签
+
+    vote = models.ManyToManyField(User, verbose_name="vote by some user", 
+        related_name='user_vote', blank=True)   # & vote帖子
     favorite = models.ManyToManyField(User, verbose_name="collected by some user", 
         related_name='user_favorite', blank=True)  # & 收藏帖子
     browser = models.ManyToManyField(User, verbose_name="browsered by some user", 
@@ -49,14 +53,15 @@ class Draft(models.Model):
 
 
 class Comment(models.Model):
+    tmp_name = models.CharField(null=False, default=generate_random_name, max_length=20)
     comment_under = models.ForeignKey(Post, on_delete=models.CASCADE, 
         related_name='post_comment', verbose_name="comment under some post") # & 在某个帖子下的所有评论
-    last_modified = models.DateTimeField(auto_now_add=True) # * 发帖时间 (generated automatically)
-    likes = models.IntegerField(null=False, default=0)  # * 赞踩数 (generated automatically)
-    reply_to = models.ForeignKey('self', on_delete=models.CASCADE, default=None,
-        related_name='comment_comment', verbose_name='commeng on other comment')  # & 二级引用回复
     comment_by = models.ForeignKey(User, on_delete=models.CASCADE, 
         related_name='user_comment', verbose_name="comment by some user")  # & 回复给某个人
-    tmp_name = models.CharField(null=False, default=generate_random_name, max_length=20)
+    father_comment = models.ForeignKey('self', on_delete=models.CASCADE, default=None, null=True,
+        related_name='comment_comment', verbose_name='commeng on other comment')  # & 二级引用回复
+    comment_content = models.TextField(null=False)  # 内容
+    comment_time = models.DateTimeField(auto_now_add=True) # * 发帖时间 (generated automatically)
+    likes = models.IntegerField(null=False, default=0)  # * 赞踩数 (generated automatically)
     # * -1表示回复帖子, 正整数表示回复另一个回复 (generated automatically)
 
