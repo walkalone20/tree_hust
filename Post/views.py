@@ -222,7 +222,7 @@ class DeleteCommentView(generics.DestroyAPIView):
 class UpvoteCommentView(generics.UpdateAPIView):
     """
     upvote一个评论
-    @url: /Comment/<int:pk>/upvote/
+    @url: /post/<int:pk>/comment/<int:on>/upvote/
     @method: put
     @param: likes
     @return: 
@@ -233,10 +233,11 @@ class UpvoteCommentView(generics.UpdateAPIView):
     # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
+
 class DownvoteCommentView(generics.UpdateAPIView):
     """
     downvote一个评论
-    @url: /Comment/<int:pk>/downvote/
+    @url: /post/<int:pk>/comment/<int:on>/downvote/
     @method: put
     @param: hates
     @return: 
@@ -422,7 +423,7 @@ class UploadDraftView(generics.DestroyAPIView):
 # class oldCreatePostView(APIView):
 #     serializer_class = CreatePostSerializer
 
-#     @login_required # FIXME
+#     @login_required 
 #     def post(self, request, format=None):
 #         serializer= self.serializer_class(data=request.data)
 #         if serializer.is_valid():

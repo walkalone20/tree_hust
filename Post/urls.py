@@ -4,6 +4,7 @@ from .views import CollectionListView, CreateDraftView, DeleteDraftView, UpdateD
 from .views import BrowserListView, OpenDraftView, UploadDraftView, SkimDraftView
 from .views import UpdatePostView, MyPostView, CommentPostView, UpvotePostView, DownvotePostView
 from .views import DeleteCommentView, UpvoteCommentView, DownvoteCommentView
+
 #URLConf
 urlpatterns = [
     # * CRUD on post
@@ -15,8 +16,8 @@ urlpatterns = [
     path('post/<int:pk>/update/', UpdatePostView.as_view(), name='update-post'),
 
     # * upvote and downvote on post
-    path('post/<int:pk>/upvote/', UpvotePostView.as_view(), name='Upvote-post'),
-    path('post/<int:pk>/downvote/', DownvotePostView.as_view(), name='Downvote-post'),
+    path('post/<int:pk>/upvote/', UpvotePostView.as_view(), name='upvote-post'),
+    path('post/<int:pk>/downvote/', DownvotePostView.as_view(), name='downvote-post'),
 
     # * post collections
     path('collect_post/', CollectionView.as_view()),
@@ -30,6 +31,7 @@ urlpatterns = [
     path('post/<int:pk>/comment/<int:on>/delete', DeleteCommentView.as_view(), name='delete-comment'),
     path('post/<int:pk>/comment/<int:on>/upvote', UpvoteCommentView.as_view(), name='upvote-comment'),
     path('post/<int:pk>/comment/<int:on>/downvote', DownvoteCommentView.as_view(), name='downvote-comment'),
+
 
     # * draft implementation
     path('draft/', SkimDraftView.as_view(), name='skim-draft'),

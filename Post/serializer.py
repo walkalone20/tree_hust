@@ -57,13 +57,17 @@ class OpenPostSerializer(serializers.ModelSerializer):
     # comment = serializers.RelatedField(source='comment', many=True)
     update_url = serializers.SerializerMethodField(method_name='get_update_url', read_only=True)
     delete_url = serializers.SerializerMethodField(method_name='get_delete_url', read_only=True)
-    comment_url = serializers.SerializerMethodField(method_name='get_comment_url', read_only=True)
-    vote_url = serializers.SerializerMethodField(method_name='get_vote_url', read_only=True)
-    
+    comment_url = serializers.SerializerMethodField(method_name='get_comment_url', read_only=True)  # TODO: 
+    upvote_url = serializers.SerializerMethodField(method_name='get_upvote_url', read_only=True)
+    downvote_url = serializers.SerializerMethodField(method_name='get_downvote_url', read_only=True)
+    has_upvoted = serializers.SerializerMethodField(method_name='get_has_upvoted', read_only=True)
+    has_downvoted = serializers.SerializerMethodField(method_name='get_has_downvoted', read_only=True)
+
     class Meta:
         model = Post
-        fields = ('id', 'update_url', 'delete_url', 'comment_url', 'vote_url', 'posted_by', 'tmp_name', 'post_title', 
-        'post_content', 'last_modified', 'likes', 'watches', 'comments', 'tag', 'post_comment')
+        fields = ('id', 'update_url', 'delete_url', 'comment_url', 'upvote_url', 'downvote_url', 'has_upvoted',
+           'has_downvoted', 'posted_by', 'tmp_name','post_title', 'post_content', 'last_modified', 'likes', 'hates',
+           'watches', 'comments', 'tag', 'post_comment')
 
     def get_update_url(self, obj):
         request = self.context['request']
@@ -89,15 +93,45 @@ class OpenPostSerializer(serializers.ModelSerializer):
             return reverse('comment-post', kwargs={"pk": obj.pk}, request=request)
         return None
     
-    def get_vote_url(self, obj):
+    def get_upvote_url(self, obj):
         request = self.context['request']
         if request == None:
             return None
         if request.user.is_authenticated:
-            return reverse('vote-post', kwargs={"pk": obj.pk}, request=request)
-        
+            return reverse('upvote-post', kwargs={"pk": obj.pk}, request=request)
         return None
 
+    def get_downvote_url(self, obj):
+        request = self.context['request']
+        if request == None:
+            return None
+        if request.user.is_authenticated:
+            return reverse('downvote-post', kwargs={"pk": obj.pk}, request=request)
+        return None
+
+    def get_has_upvoted(self, obj):
+        request = self.context['request']
+        if request == None:
+            return None
+        if not request.user.is_authenticated:
+            return False
+        
+        upvote = obj.upvote.all()
+        if request.user in upvote:
+            return True
+        return False
+        
+    def get_has_downvoted(self, obj):
+        request = self.context['request']
+        if request == None:
+            return None
+        if not request.user.is_authenticated:
+            return False
+
+        downvote = obj.downvote.all()
+        if request.user in downvote:
+            return True 
+        return False
 
 
 class UpdatePostSerializer(serializers.ModelSerializer):
@@ -158,7 +192,7 @@ class UpvotePostSerializer(serializers.ModelSerializer):
 class DownvotePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ('likes', )
+        fields = ('hates', )
 
     def update(self, instance, validated_data):
         request = self.context['request'] 
@@ -248,9 +282,9 @@ class UpvoteCommentSerializer(serializers.ModelSerializer):
         elif request.user in downvote:
             instance.downvote.remove(request.user)
             instance.hates-=1
+            instance.upvote.add(request.user)
+            instance.likes+=1
         
-        instance.upvote.add(request.user)
-        instance.likes+=1
         instance.save()
 
         return instance
@@ -274,10 +308,11 @@ class DownvoteCommentSerializer(serializers.ModelSerializer):
         elif request.user in upvote:
             instance.upvote.remove(request.user)
             instance.likes-=1
-        
-        instance.downvote.add(request.user)
-        instance.hates+=1
+            instance.downvote.add(request.user)
+            instance.hates+=1
         instance.save()
+        
+        
 
         return instance
 
