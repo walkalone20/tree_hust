@@ -2,8 +2,8 @@ from django.urls import path
 from .views import CreatePostView, SkimPostView, OpenPostView, DeletePostView, CollectionView
 from .views import CollectionListView, CreateDraftView, DeleteDraftView, UpdateDraftView
 from .views import BrowserListView, OpenDraftView, UploadDraftView, SkimDraftView
-from .views import UpdatePostView, MyPostView, CommentPostView, VotePostView, DeleteCommentView, VoteCommentView
-
+from .views import UpdatePostView, MyPostView, CommentPostView, UpvotePostView, DownvotePostView
+from .views import DeleteCommentView, VoteCommentView
 #URLConf
 urlpatterns = [
     # * CRUD on post
@@ -15,8 +15,8 @@ urlpatterns = [
     path('post/<int:pk>/update/', UpdatePostView.as_view(), name='update-post'),
 
     # * upvote and downvote on post
-    path('post/<int:pk>/upvote/', VotePostView.as_view(), name='upvote-post'),
-    path('post/<int:pk>/downvote/', VotePostView.as_view(), name='downvote-post'),
+    path('post/<int:pk>/upvote/', UpvotePostView.as_view(), name='Upvote-post'),
+    path('post/<int:pk>/downvote/', DownvotePostView.as_view(), name='Downvote-post'),
 
     # * post collections
     path('collect_post/', CollectionView.as_view()),

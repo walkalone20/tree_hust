@@ -136,14 +136,11 @@ class UpvotePostSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         request = self.context['request']
-        # if not request.user.is_authenticated:
-        #     raise serializers.ValidationError({"message": "当前尚未登陆"})
-        # if abs(instance.likes - validated_data.get('likes')) != 1:
-        #     raise serializers.ValidationError({"message": "不合法的likes"})
+        if not request.user.is_authenticated:
+            raise serializers.ValidationError({"message": "当前尚未登陆"})
         
         upvote = instance.upvote.all()
         downvote = instance.downvote.all()
-        # vote = validated_data.pop('validated_data')
 
         if request.user in upvote:
             instance.upvote.remove(request.user)
@@ -156,7 +153,6 @@ class UpvotePostSerializer(serializers.ModelSerializer):
         instance.likes+=1
         instance.save()
 
-        # return super().update(instance, validated_data)
         return instance
 
 class DownvotePostSerializer(serializers.ModelSerializer):
@@ -166,10 +162,8 @@ class DownvotePostSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         request = self.context['request'] 
-        # if not request.user.is_authenticated:
-        #     raise serializers.ValidationError({"message": "当前尚未登陆"})
-        # if abs(instance.likes - validated_data.get('likes')) != 1:
-        #     raise serializers.ValidationError({"message": "不合法的likes"})
+        if not request.user.is_authenticated:
+            raise serializers.ValidationError({"message": "当前尚未登陆"})
         
         upvote = instance.upvote.all()
         downvote = instance.downvote.all()
@@ -186,7 +180,6 @@ class DownvotePostSerializer(serializers.ModelSerializer):
         instance.hates+=1
         instance.save()
 
-        # return super().update(instance, validated_data)
         return instance
 
 class SkimCollectionSerializer(serializers.ModelSerializer):

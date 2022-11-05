@@ -142,7 +142,7 @@ class DeletePostView(generics.DestroyAPIView):
         return super().perform_destroy(instance)
 
 
-class UpvotePostSerializer(generics.UpdateAPIView):
+class UpvotePostView(generics.UpdateAPIView):
     """
     upvote一个帖子
     @url: /post/<int:pk>/upvote/
@@ -156,7 +156,7 @@ class UpvotePostSerializer(generics.UpdateAPIView):
     # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-class DownvotePostSerializer(generics.UpdateAPIView):
+class DownvotePostView(generics.UpdateAPIView):
     """
     downvote一个帖子
     @url: /post/<int:pk>/downvote/
