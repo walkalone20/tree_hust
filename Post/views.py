@@ -24,7 +24,7 @@ from .models import Post, Draft, Comment
 from .serializer import CreatePostSerializer, SkimPostSerializer, OpenPostSerializer
 from .serializer import SkimCollectionSerializer, SkimBrowserSerializer, CreateDraftSerializer
 from .serializer import DeleteDraftSerializer, SkimDraftSerializer, OpenDraftSerializer, UpdateDraftSerializer
-from .serializer import SearchPostSerialzer
+from .serializer import UpdatePostSerializer
 
 from .permissions import IsOwnerOrReadOnlyPermission
 
@@ -32,7 +32,7 @@ from .permissions import IsOwnerOrReadOnlyPermission
 class CreatePostView(generics.CreateAPIView):
     """
     创建一个帖子
-    @url: /post/create_post
+    @url: /post/create
     @method: post
     @param: post_title, post_content, tag
     @return:
@@ -45,6 +45,7 @@ class CreatePostView(generics.CreateAPIView):
     serializer_class = CreatePostSerializer
     authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [IsOwnerOrReadOnlyPermission]
 
     def perform_create(self, serializer):
         post_title = serializer.validated_data.get('post_title')
@@ -52,14 +53,11 @@ class CreatePostView(generics.CreateAPIView):
         tag = serializer.validated_data.get('tag')
         serializer.save(post_title=post_title, post_content=post_content, tag=tag)
 
-    # authentication_classes = [permissions.IsAuthenticated]
-    # permission_classes = [IsOwnerOrReadOnlyPermission]
-
 
 class SkimPostView(generics.ListAPIView):
     """
     总览所有帖子
-    @url: /post/skim_post
+    @url: /post/
     @method: get
     @param: null
     @return:
@@ -67,6 +65,27 @@ class SkimPostView(generics.ListAPIView):
     """
     queryset = Post.objects.all()
     serializer_class = SkimPostSerializer
+    # TODO: pagination
+
+
+class MyPostView(generics.ListAPIView):
+    """
+    浏览自己发的的帖子
+    @url: /post/my
+    @method: get
+    @param: null
+    @return:
+        - json格式的所有帖子的概要信息 (帖子id, 用户, 临时名, 标题, 创建时间, 标签, 评论数, 观看数, 点赞数)
+    """
+    queryset = Post.objects.all()
+    serializer_class = SkimPostSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        request = self.request
+        return qs.filter(posted_by=request.user)
 
 
 class OpenPostView(generics.RetrieveAPIView):
@@ -91,12 +110,12 @@ class UpdatePostView(generics.UpdateAPIView):
         根据tag对帖子进行编辑
         @url: /post/<int:pk>/update
         @method: put
-        @param: post_title, post_content, last_modified
+        @param: post_title, post_content (, last_modified)
         @return:
             - json格式的满足tag的所有帖子信息的概览
     """
     queryset = Post.objects.all()
-    serializer_class = SkimPostSerializer
+    serializer_class = UpdatePostSerializer
     lookup_field = 'pk'
     authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
@@ -105,19 +124,22 @@ class UpdatePostView(generics.UpdateAPIView):
 class DeletePostView(generics.DestroyAPIView):
     """
     删除一个帖子
-    @url: /post/delete_post
+    @url: /post/<int:pk>/delete
     @method: delete
     @param: id(帖子的id)
     @return:
         - status: HTTP状态码, 删除成功为200 OK, 删除失败为400 BAD_REQUEST   
     """
-    # serializer_class = DeletePostSerializer
+    queryset = Post.objects.all()
+    serializer_class = SkimPostSerializer   # ? 没搞懂什么鬼
     authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'pk'
-    def get_queryset(self):
-        queryset = Post.objects.filter(posted_by=self.request.user)
-        return queryset
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        request = self.request
+        return qs.filter(posted_by=request.user)
 
     def perform_destroy(self, instance):
         return super().perform_destroy(instance)
@@ -125,7 +147,7 @@ class DeletePostView(generics.DestroyAPIView):
 
 class FilterPostView(generics.ListAPIView):
     """
-        @type: API 接口, 根据tag对帖子进行筛选
+        API 接口, 根据tag对帖子进行筛选
         @url: /post/filter_post
         @method: get
         @param: tag
@@ -137,19 +159,12 @@ class FilterPostView(generics.ListAPIView):
     model = Post
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['tag']
-    # ? paginate_by = 100
-
-
-class TagFilterBackend(filters.BaseFilterBackend):
-    def filter_queryset(self, request, queryset, view):
-        if request.get('tag') is not None:
-            queryset = queryset.filter(tag=request.get('tag'))
-        return queryset
+    # TODO: add pagination
 
 
 class SearchPostView(generics.ListAPIView):
     """
-        @type: API 接口, 根据tag和search对帖子进行筛选和对帖子内容搜索
+        根据tag和search对帖子进行筛选和对帖子内容搜索
         @url: /post/search_post
         @method: get
         @param: 
@@ -159,16 +174,16 @@ class SearchPostView(generics.ListAPIView):
             - json格式的满足tag和search(查询标题和内容)所有帖子信息的概览
     """
     queryset = Post.objects.all()
-    serializer_class = SearchPostSerialzer
+    serializer_class = SkimPostSerializer
     model = Post
-    filter_backends = [TagFilterBackend]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['tag']
     search_fields = ['post_title', 'post_content']
 
 
 class CollectionListView(APIView):
     serializer_class = SkimCollectionSerializer
 
-    @login_required
     def get(self,request):
         return Response(request.user.user_favorite.all(), status=status.HTTP_200_OK)
 
