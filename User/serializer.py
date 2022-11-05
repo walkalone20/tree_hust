@@ -69,7 +69,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email')
+        fields = ('username', 'email', 'aboutme')
         extra_kwargs = {
         }
 
@@ -105,6 +105,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
         instance.email = validated_data['email']
         instance.username = validated_data['username']
+        instance.aboutme = validated_data['aboutme']
 
         instance.save()
 
