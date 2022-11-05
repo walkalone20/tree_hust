@@ -94,6 +94,7 @@ class OpenPostSerializer(serializers.ModelSerializer):
             return None
         if request.user.is_authenticated:
             return reverse('vote-post', kwargs={"pk": obj.pk}, request=request)
+        
         return None
 
 
@@ -151,7 +152,7 @@ class VotePostSerializer(serializers.ModelSerializer):
 class SkimCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ('comment_under', 'last_modified', 'likes', 'reply_to', 'comment_by', 'tmp_name')
+        fields = ('comment_under', 'last_modified', 'likes', 'comment_content', 'reply_to', 'comment_by', 'tmp_name')
     
 
 class CreateCommentSerializer(serializers.ModelSerializer):

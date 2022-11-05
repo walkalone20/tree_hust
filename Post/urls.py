@@ -25,10 +25,11 @@ urlpatterns = [
 
     path('skim_browser_post/', BrowserListView.as_view()),
 
-    path('skim_draft/', DraftListView.as_view()),
-    path('open_draft/', OpenDraftView.as_view()),
-    path('create_draft', CreateDraftView.as_view()),
-    path('delete_draft', DeleteDraftView.as_view()),
-    path('update_draft', UpdateDraftView.as_view()),
+    path('draft/', DraftListView.as_view()),
+    path('draft/<int:pk>', OpenDraftView.as_view()),
+    path('draft/create', CreateDraftView.as_view()),
+    path('draft/<int:pk>/delete', DeleteDraftView.as_view()),
+    path('draft/<int:pk>/update', UpdateDraftView.as_view()),
+    # path('draft/<int:pk>/upload', UploadDraftView.as_view()),
 
 ]
