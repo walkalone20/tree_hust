@@ -25,7 +25,8 @@ from .serializer import CreatePostSerializer, SkimPostSerializer, OpenPostSerial
 from .serializer import SkimCollectionSerializer, SkimBrowserSerializer, CreateDraftSerializer
 from .serializer import SkimDraftSerializer, OpenDraftSerializer, UpdateDraftSerializer
 from .serializer import UpdatePostSerializer, UpvotePostSerializer, DownvotePostSerializer
-from .serializer import UpvoteCommentSerializer, DownvoteCommentSerializer
+from .serializer import UpvoteCommentSerializer, DownvoteCommentSerializer, CreateCommentSerializer
+from .serializer import SkimCommentSerializer
 
 from .permissions import IsOwnerOrReadOnlyPermission
 
@@ -40,7 +41,7 @@ class CreatePostView(generics.CreateAPIView):
     """
     queryset = Post.objects.all()
     serializer_class = CreatePostSerializer
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     # permission_classes = [IsOwnerOrReadOnlyPermission]
 
@@ -48,7 +49,7 @@ class CreatePostView(generics.CreateAPIView):
         post_title = serializer.validated_data.get('post_title')
         post_content = serializer.validated_data.get('post_content')
         tag = serializer.validated_data.get('tag')
-        serializer.save(post_title=post_title, post_content=post_content, tag=tag)
+        return serializer.save(post_title=post_title, post_content=post_content, tag=tag)
 
 
 class SkimPostView(generics.ListAPIView):
@@ -211,12 +212,52 @@ class CollectionListView(APIView):
 
 
 ##################################### Comment View #####################################
-class CommentPostView(generics.CreateAPIView):
-    pass
+class CreateCommentView(generics.CreateAPIView):
+    """
+    发布一个评论
+    @url: /post/<int:pk>/comment/<int:on>
+    @method: post
+    @param: reply_to
+    @return: 
+    """
+    queryset = Comment.objects.all()
+    serializer_class = CreateCommentSerializer
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        from rest_framework import serializers
+        comment = Comment()
+        comment.comment_content = serializer.validated_data['comment_content']
+
+        comment_under = Post.objects.filter(id=self.kwargs.get('pk')).first()
+        comment.comment_under = comment_under
+
+        reply_to = Comment.objects.filter(id=self.kwargs.get('on')).first()
+        comment.reply_to = reply_to
+
+        if self.request.user.is_authenticated:
+            comment.comment_by = self.request.user
+            comment.save()
+            return comment
+        else:
+            raise serializers.ValidationError({"detailed": "please login first!"})
 
 
 class DeleteCommentView(generics.DestroyAPIView):
-    pass
+    queryset = Comment.objects.all()
+    serializer_class = SkimCommentSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'on'
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset()
+        request = self.request
+        return qs.filter(comment_by=request.user)
+    
+    def perform_destroy(self, instance):
+        return super().perform_destroy(instance)
 
 
 class UpvoteCommentView(generics.UpdateAPIView):
@@ -248,6 +289,9 @@ class DownvoteCommentView(generics.UpdateAPIView):
     # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
+
+
+
 ##################################### Draft View ############################################
 class CreateDraftView(APIView):
     serializer_class = CreateDraftSerializer
@@ -269,25 +313,26 @@ class CreateDraftView(APIView):
         return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
     
 
-class DeleteDraftView(APIView):
-    serializer_class = SkimDraftSerializer
+# class oldDeleteDraftView(APIView):
+#     serializer_class = SkimDraftSerializer
 
-    @login_required
-    def post(self, request, format=None):
-        serializer = self.serializer_class(data=request.data)
+#     @login_required
+#     def post(self, request, format=None):
+#         serializer = self.serializer_class(data=request.data)
 
-        id = serializer.data.get('id')
-        draft= Draft.objects.filter(id=id)
+#         id = serializer.data.get('id')
+#         draft= Draft.objects.filter(id=id)
         
-        drafted_by = draft.get('drafted_by')
-        if self.request.user.id != drafted_by.id:
-            return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
-        # ^ 判断是否有删除的权限
+#         drafted_by = draft.get('drafted_by')
+#         if self.request.user.id != drafted_by.id:
+#             return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
+#         # ^ 判断是否有删除的权限
 
-        draft.delete()
-        # ^ 因为设置了on_delete=CASCADE, 也同时删除了附着在帖子下面的评论
+#         draft.delete()
+#         # ^ 因为设置了on_delete=CASCADE, 也同时删除了附着在帖子下面的评论
 
-        return Response(request.data, status=status.HTTP_200_OK)
+#         return Response(request.data, status=status.HTTP_200_OK)
+
 
 class SkimDraftView(generics.ListAPIView):
     """

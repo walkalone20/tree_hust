@@ -90,7 +90,7 @@ class OpenPostSerializer(serializers.ModelSerializer):
         if request == None:
             return None
         if request.user.is_authenticated:
-            return reverse('comment-post', kwargs={"pk": obj.pk}, request=request)
+            return reverse('create-comment', kwargs={"pk": obj.pk, "on": 0}, request=request)
         return None
     
     def get_upvote_url(self, obj):
@@ -235,32 +235,18 @@ class SkimCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('comment_under', 'last_modified', 'likes', 'comment_content', 'reply_to', 'comment_by', 'tmp_name')
-    
+
 
 class CreateCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ('reply_to', '', 'comment_content')
+        fields = ('comment_content', )
 
     def validate_comment_content(self, value):
         if not check(value):
-            raise serializers.ValidationError({'message': '评论'})
+            raise serializers.ValidationError({'message': '评论内容不合法'})
 
         return value
-
-    def create(self, validated_data):
-        request = self.context.get('request')
-        post = Post()
-        post.post_title = validated_data['post_title']
-        post.post_content = validated_data['post_content']   
-        post.tag = validated_data['tag']
-
-        if request.user.is_authenticated:
-            post.posted_by = request.user
-            post.save()
-            return post
-        else:
-            raise serializers.ValidationError({"detailed": "please login first!"})
 
 
 class UpvoteCommentSerializer(serializers.ModelSerializer):
@@ -311,8 +297,6 @@ class DownvoteCommentSerializer(serializers.ModelSerializer):
             instance.downvote.add(request.user)
             instance.hates+=1
         instance.save()
-        
-        
 
         return instance
 
@@ -335,12 +319,6 @@ class CreateDraftSerializer(serializers.ModelSerializer):
             return draft
         else:
             raise serializers.ValidationError({"detailed": "please login first!"})
-
-
-# class DeleteDraftSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Draft
-#         fields = ('id')
 
 
 class SkimDraftSerializer(serializers.ModelSerializer):
@@ -390,6 +368,7 @@ class UpdateDraftSerializer(serializers.ModelSerializer):
     class Meta:
         model = Draft
         fields = ('draft_title', 'draft_content', 'tag')
+
         # extra_kwargs = {
         #     'draft_title': {'required': True},
         #     'tag': {'required': True},
@@ -404,14 +383,3 @@ class UpdateDraftSerializer(serializers.ModelSerializer):
 
         return super().update(instance, validated_data)
 
-
-# class DeletePostSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Post
-#         fields = ('id')
-
-
-# class SearchPostSerialzer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Post
-#         fields = ('id', 'posted_by', 'tmp_name', 'last_modified', 'post_title', 'tag', 'likes', 'watches', 'comments')

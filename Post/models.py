@@ -73,10 +73,9 @@ class Comment(models.Model):
         related_name='comment_comment', verbose_name='commeng on other comment')  # & 二级引用回复
     comment_content = models.TextField(null=False, default='')  # 内容
     comment_time = models.DateTimeField(auto_now_add=True) # * 发帖时间 (generated automatically)
+
     likes = models.IntegerField(null=False, default=0)  # * 赞数 (generated automatically)
     hates = models.IntegerField(null=False, default=0)  # * 踩数 (generated automatically)
-    # * -1表示回复帖子, 正整数表示回复另一个回复 (generated automatically)
-
     upvote = models.ManyToManyField(User, verbose_name="upvote by some user", 
         related_name='upvote_comment', blank=True)   # & upvote评论
     downvote = models.ManyToManyField(User, verbose_name="downvote by some user", 
