@@ -1,5 +1,12 @@
 from tkinter.ttk import Style
 from rest_framework import serializers
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import status
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage
+from django.urls import reverse
+from django.conf import settings
 
 from .models import User
 
@@ -70,6 +77,17 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         if User.objects.exclude(pk=user.pk).filter(email=value).exists():
             raise serializers.ValidationError({"email": "This email is already in use."})
+        
+        token=RefreshToken.for_user(user)
+
+        current_site=get_current_site(self.context['request']).domain
+        relativeLink=reverse('verify email')
+        absurl='http://'+current_site+relativeLink+'?token='+str(token)
+        email_body='Hi, '+user.username+'! Use the link below to verify your email:\n'+absurl
+
+        email=EmailMessage(subject='Verify your email',body=email_body,to=[user.email])
+        email.send()
+
         return value
 
     def validate_username(self, value):
@@ -89,4 +107,9 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
         instance.save()
 
-        return instance
+        return Response({
+            'notion':"We've successfully reset your email address, but it hasn't been verified yet. If you don't\
+                verify it in time, you cannot login to Treehust next time.",
+            'new email':instance.email,
+            'new username':instance.username
+        },status=status.HTTP_200_OK)

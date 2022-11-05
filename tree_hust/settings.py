@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     "Post.apps.PostConfig",
     "User.apps.UserConfig",
     "rest_framework",
-    "imagekit",
     'django_filters',
 ]
 
