@@ -2,17 +2,21 @@ from django.urls import path
 from .views import CreatePostView, SkimPostView, OpenPostView, DeletePostView, CollectionView
 from .views import CollectionListView, CreateDraftView, DeleteDraftView, UpdateDraftView
 from .views import BrowserListView, OpenDraftView, DraftListView, FilterPostView, SearchPostView
-from .views import UpdatePostView
+from .views import UpdatePostView, MyPostView
 
 #URLConf
 urlpatterns = [
-    path('post/', SkimPostView.as_view()),
-    path('create_post/', CreatePostView.as_view()),
-    path('post/<int:pk>/delete/', DeletePostView.as_view()),
-    path('post/<int:pk>/', OpenPostView.as_view()),
-    path('post/<int:pk>/update/', UpdatePostView.as_view()),
-    path('filter_post', FilterPostView.as_view()),
-    path('search_post', SearchPostView.as_view()),
+    path('post/', SkimPostView.as_view(), name='skim-post'),
+    path('post/my', MyPostView.as_view(), name='my-post'),
+    path('post/create/', CreatePostView.as_view(), name='create-post'),
+
+    path('post/<int:pk>/delete/', DeletePostView.as_view(), name='delete-post'),
+    path('post/<int:pk>/', OpenPostView.as_view(), name='open-post'),
+    path('post/<int:pk>/update/', UpdatePostView.as_view(), name='update-post'),
+
+    path('post/filter/', FilterPostView.as_view(), name='filter-post'),
+    path('post/search/', SearchPostView.as_view(), name='search-post'),
+
 
     path('collect_post/', CollectionView.as_view()),
     path('skim_collect_post/', CollectionListView.as_view()),
