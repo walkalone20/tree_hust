@@ -3,7 +3,7 @@ from .views import CreatePostView, SkimPostView, OpenPostView, DeletePostView, C
 from .views import CollectionListView, CreateDraftView, DeleteDraftView, UpdateDraftView
 from .views import BrowserListView, OpenDraftView, UploadDraftView, SkimDraftView
 from .views import UpdatePostView, MyPostView, CommentPostView, UpvotePostView, DownvotePostView
-from .views import DeleteCommentView, VoteCommentView
+from .views import DeleteCommentView, UpvoteCommentView, DownvoteCommentView
 #URLConf
 urlpatterns = [
     path('post/', SkimPostView.as_view(), name='skim-post'),
@@ -20,7 +20,8 @@ urlpatterns = [
 
     path('post/<int:pk>/comment/', CommentPostView.as_view(), name='comment-post'),
     path('post/<int:pk>/comment/<int:on>/delete', DeleteCommentView.as_view(), name='delete-comment'),
-    path('post/<int:pk>/comment/<int:on>/vote', VoteCommentView.as_view(), name='vote-comment'),
+    path('post/<int:pk>/comment/<int:on>/upvote', UpvoteCommentView.as_view(), name='upvote-comment'),
+    path('post/<int:pk>/comment/<int:on>/downvote', DownvoteCommentView.as_view(), name='downvote-comment'),
 
 
     path('collect_post/', CollectionView.as_view()),

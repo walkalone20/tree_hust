@@ -25,6 +25,7 @@ from .serializer import CreatePostSerializer, SkimPostSerializer, OpenPostSerial
 from .serializer import SkimCollectionSerializer, SkimBrowserSerializer, CreateDraftSerializer
 from .serializer import SkimDraftSerializer, OpenDraftSerializer, UpdateDraftSerializer
 from .serializer import UpdatePostSerializer, UpvotePostSerializer, DownvotePostSerializer
+from .serializer import UpvoteCommentSerializer, DownvoteCommentSerializer
 
 from .permissions import IsOwnerOrReadOnlyPermission
 
@@ -218,7 +219,33 @@ class DeleteCommentView(generics.DestroyAPIView):
     pass
 
 
+class UpvoteCommentView(generics.UpdateAPIView):
+    """
+    upvote一个评论
+    @url: /Comment/<int:pk>/upvote/
+    @method: put
+    @param: likes
+    @return: 
+    """
+    queryset = Comment.objects.all()
+    serializer_class = UpvoteCommentSerializer
+    lookup_field = 'pk'
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
+class DownvoteCommentView(generics.UpdateAPIView):
+    """
+    downvote一个评论
+    @url: /Comment/<int:pk>/downvote/
+    @method: put
+    @param: hates
+    @return: 
+    """
+    queryset = Comment.objects.all()
+    serializer_class = DownvoteCommentSerializer
+    lookup_field = 'pk'
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
 ##################################### Draft View ############################################
 class CreateDraftView(APIView):
