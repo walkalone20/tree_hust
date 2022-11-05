@@ -151,7 +151,6 @@ class UpvotePostSerializer(serializers.ModelSerializer):
         elif request.user in downvote:
             instance.downvote.remove(request.user)
             instance.hates-=1
-            instance.save()
         
         instance.upvote.add(request.user)
         instance.likes+=1
@@ -166,7 +165,7 @@ class DownvotePostSerializer(serializers.ModelSerializer):
         fields = ('likes', )
 
     def update(self, instance, validated_data):
-        request = self.context['request']
+        request = self.context['request'] 
         # if not request.user.is_authenticated:
         #     raise serializers.ValidationError({"message": "当前尚未登陆"})
         # if abs(instance.likes - validated_data.get('likes')) != 1:
@@ -182,7 +181,6 @@ class DownvotePostSerializer(serializers.ModelSerializer):
         elif request.user in upvote:
             instance.upvote.remove(request.user)
             instance.likes-=1
-            instance.save()
         
         instance.downvote.add(request.user)
         instance.hates+=1
