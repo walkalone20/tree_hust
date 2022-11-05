@@ -262,7 +262,57 @@ class CreateCommentSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"detailed": "please login first!"})
 
 
+class UpvoteCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('likes', )
 
+    def update(self, instance, validated_data):
+        request = self.context['request']
+        if not request.user.is_authenticated:
+            raise serializers.ValidationError({"message": "当前尚未登陆"})
+        
+        upvote = instance.upvote.all()
+        downvote = instance.downvote.all()
+
+        if request.user in upvote:
+            instance.upvote.remove(request.user)
+            instance.likes-=1
+        elif request.user in downvote:
+            instance.downvote.remove(request.user)
+            instance.hates-=1
+        
+        instance.upvote.add(request.user)
+        instance.likes+=1
+        instance.save()
+
+        return instance
+
+class DownvoteCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('likes', )
+
+    def update(self, instance, validated_data):
+        request = self.context['request'] 
+        if not request.user.is_authenticated:
+            raise serializers.ValidationError({"message": "当前尚未登陆"})
+        
+        upvote = instance.upvote.all()
+        downvote = instance.downvote.all()
+
+        if request.user in downvote:
+            instance.downvote.remove(request.user)
+            instance.hates-=1
+        elif request.user in upvote:
+            instance.upvote.remove(request.user)
+            instance.likes-=1
+        
+        instance.downvote.add(request.user)
+        instance.hates+=1
+        instance.save()
+
+        return instance
 
 ############################## Draft Serializer##########################
 class CreateDraftSerializer(serializers.ModelSerializer):
