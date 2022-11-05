@@ -21,7 +21,7 @@ from User.models import User
 from .models import Post, Draft, Comment
 
 
-from .serializer import CreatePostSerializer, SkimPostSerializer, DeletePostSerializer, OpenPostSerializer
+from .serializer import CreatePostSerializer, SkimPostSerializer, OpenPostSerializer
 from .serializer import SkimCollectionSerializer, SkimBrowserSerializer, CreateDraftSerializer
 from .serializer import DeleteDraftSerializer, SkimDraftSerializer, OpenDraftSerializer, UpdateDraftSerializer
 from .serializer import FilterPostSerialzer, SearchPostSerialzer
@@ -77,18 +77,27 @@ class CreatePostView(generics.CreateAPIView):
 
 class SkimPostView(generics.ListAPIView):
     """
-        @type: API 接口, 总览所有帖子
-        @url: /post/skim_post
-        @method: get
-        @param: null
-        @return:
-            - json格式的所有帖子的概要信息 (帖子id, 用户, 临时名, 标题, 创建时间, 标签, 评论数, 观看数, 点赞数)
+    总览所有帖子
+    @url: /post/skim_post
+    @method: get
+    @param: null
+    @return:
+        - json格式的所有帖子的概要信息 (帖子id, 用户, 临时名, 标题, 创建时间, 标签, 评论数, 观看数, 点赞数)
     """
     queryset = Post.objects.all()
     serializer_class = SkimPostSerializer
 
 
 class OpenPostView(generics.RetrieveAPIView):
+    """
+    点进一个帖子
+    @url: /post/<int:pk>/
+    @method: get
+    @param: null
+    @return:
+      - post.data: json格式的创建成功的帖子的所有信息和评论的信息
+      - status: HTTP状态码, 获取成功为200 OK; 失败为400 BAD_REQUEST  
+    """
     serializer_class = OpenPostSerializer
     queryset = Post.objects.all()
     lookup_field = 'pk'
@@ -99,13 +108,7 @@ class OpenPostView(generics.RetrieveAPIView):
 
 #     def get(self, request, pk = None, format=None):
 #         """
-#             @type: API 接口, 点进一个帖子
-#             @url: /post/<int:pk>/
-#             @method: get
-#             @param: null
-#             @return:
-#                 - post.data: json格式的创建成功的帖子的所有信息和评论的信息
-#                 - status: HTTP状态码, 获取成功为200 OK; 失败为400 BAD_REQUEST            
+          
 #         """
 #         if pk == None:
 #             return Response({"detailed": "url error!"}, status=status.HTTP_400_BAD_REQUEST)
@@ -129,10 +132,6 @@ class OpenPostView(generics.RetrieveAPIView):
     
 
 class DeletePostView(generics.DestroyAPIView):
-    serializer_class = DeletePostSerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
-    lookup_field = 'pk'
     """
     删除一个帖子
     @url: /post/delete_post
@@ -141,13 +140,16 @@ class DeletePostView(generics.DestroyAPIView):
     @return:
         - status: HTTP状态码, 删除成功为200 OK, 删除失败为400 BAD_REQUEST   
     """
+    # serializer_class = DeletePostSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'pk'
     def get_queryset(self):
         queryset = Post.objects.filter(posted_by=self.request.user)
         return queryset
 
     def perform_destroy(self, instance):
         return super().perform_destroy(instance)
-
 
 
 # class oldDeletePostView(APIView):
@@ -171,6 +173,14 @@ class DeletePostView(generics.DestroyAPIView):
 
 
 class UpdatePostView(generics.UpdateAPIView):
+    """
+        根据tag对帖子进行编辑
+        @url: /post/<int:pk>/update
+        @method: put
+        @param: post_title, post_content, last_modified
+        @return:
+            - json格式的满足tag的所有帖子信息的概览
+    """
     queryset = Post.objects.all()
     serializer_class = SkimPostSerializer
     lookup_field = 'pk'
@@ -186,7 +196,7 @@ class FilterPostView(generics.ListAPIView):
             - json格式的满足tag的所有帖子信息的概览
     """
     queryset = Post.objects.all()
-    serializer_class = FilterPostSerialzer
+    serializer_class = SkimPostSerializer
     model = Post
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['tag']

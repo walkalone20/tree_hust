@@ -27,7 +27,7 @@ class Post(models.Model):
     posted_by = models.ForeignKey(User, on_delete=models.CASCADE,
         related_name='user_post', verbose_name="posted by some user")  # & 发帖人
     tmp_name = models.CharField(null=False, default=generate_random_name, max_length=20)
-    created_at = models.DateTimeField(auto_now_add=True)   # * 发帖时间 (generated automatically)
+    last_modified = models.DateTimeField(auto_now_add=True)   # * 发帖时间 (generated automatically)
     post_title = models.TextField(null=False)   # 帖子标题
     post_content = models.TextField(null=False)  # 帖子内容
     likes = models.IntegerField(null=False, default=0)  # * 赞踩数 (generated automatically)
@@ -51,7 +51,7 @@ class Draft(models.Model):
 class Comment(models.Model):
     comment_under = models.ForeignKey(Post, on_delete=models.CASCADE, 
         related_name='post_comment', verbose_name="comment under some post") # & 在某个帖子下的所有评论
-    created_at = models.DateTimeField(auto_now_add=True) # * 发帖时间 (generated automatically)
+    last_modified = models.DateTimeField(auto_now_add=True) # * 发帖时间 (generated automatically)
     likes = models.IntegerField(null=False, default=0)  # * 赞踩数 (generated automatically)
     reply_to = models.ForeignKey('self', on_delete=models.CASCADE, default=None,
         related_name='comment_comment', verbose_name='commeng on other comment')  # & 二级引用回复

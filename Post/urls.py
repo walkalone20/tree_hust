@@ -8,9 +8,9 @@ from .views import UpdatePostView
 urlpatterns = [
     path('post/', SkimPostView.as_view()),
     path('create_post/', CreatePostView.as_view()),
-    path('post/<int:pk>/delete/', DeletePostView.as_view()),
-    path('post/<int:pk>/', OpenPostView.as_view()),
-    path('post/<int:pk>/update/', UpdatePostView.as_view()),
+    path('post/<int:pk>/delete/', DeletePostView.as_view(), name='delete-post'),
+    path('post/<int:pk>/', OpenPostView.as_view(), name='open-post'),
+    path('post/<int:pk>/update/', UpdatePostView.as_view(), name='update-post'),
     path('filter_post', FilterPostView.as_view()),
     path('search_post', SearchPostView.as_view()),
 

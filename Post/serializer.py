@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Post, Draft, Comment
 from Tools import check
+from rest_framework.reverse import reverse
 
 
 class CreatePostSerializer(serializers.ModelSerializer):
@@ -8,16 +9,31 @@ class CreatePostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ('post_title', 'post_content', 'tag')
 
+    def validate_post_title(self, value):
+        if not check(value):
+            raise serializers.ValidationError({'post_title': '标题不合法'})
+
+        return value
+
+    def validate_post_content(self, value):
+        if not check(value):
+            raise serializers.ValidationError({'post_content': '内容不合法'})
+
+        return value
+
+    def validate(self, attrs):
+        request = self.context['request']
+        if not request.user.is_authenticated:
+            raise serializers.ValidationError({"user": "当前尚未登陆"})
+
+        return super().validate(attrs)
+
     def create(self, validated_data):
         request = self.context.get('request')
         post = Post()
         post.post_title = validated_data['post_title']
-        post.post_content = validated_data['post_content']
-        if not check(post.post_title):
-            raise serializers.ValidationError({'post_title': '标题不合法'})        
-        if not check(post.post_content):
-            raise serializers.ValidationError({'post_content': '内容不合法'})
-            
+        post.post_content = validated_data['post_content']   
+
         post.posted_by = request.user
         post.save()
         return post
@@ -30,50 +46,70 @@ class CreatePostSerializer(serializers.ModelSerializer):
         #     raise serializers.ValidationError({"detailed": "please login first!"})
 
 
-class OpenPostSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Post
-        fields = ('id', 'posted_by', 'tmp_name', 'post_title', 'post_content', 'created_at', 'likes',
-            'watches', 'comments', 'tag')
-
-
-
-
-class DeletePostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = ('id')
-
-
 class SkimPostSerializer(serializers.ModelSerializer):
+    open_url = serializers.HyperlinkedIdentityField(view_name='open-post', lookup_field='pk', read_only=True)
     class Meta:
         model = Post
-        fields = ('id', 'posted_by', 'tmp_name', 'created_at', 'post_title', 'tag', 'likes', 'watches', 'comments')
+        fields = ('id', 'open_url', 'posted_by', 'tmp_name', 'last_modified',
+         'post_title', 'tag', 'likes', 'watches', 'comments')
 
 
-class FilterPostSerialzer(serializers.ModelSerializer):
+class OpenPostSerializer(serializers.ModelSerializer):
+    # comment = serializers.RelatedField(source='comment', many=True)
+    update_url = serializers.SerializerMethodField(method_name='get_update_url', read_only=True)
+    delete_url = serializers.SerializerMethodField(method_name='get_delete_url', read_only=True)
+    comment_url = serializers.SerializerMetaclass(method_name = 'get_comment_url', read_only=True)  # TODO
     class Meta:
         model = Post
-        fields = ('id', 'posted_by', 'tmp_name', 'created_at', 'post_title', 'tag', 'likes', 'watches', 'comments')
+        fields = ('id', 'update_url', 'delete_url', 'posted_by', 'tmp_name', 'post_title', 
+        'post_content', 'last_modified', 'likes', 'watches', 'comments', 'tag', 'post_comment')
+
+    def get_update_url(self, obj):
+        request = self.context['request']
+        if request is None:
+            return None
+        if request.user.is_authenticated and request.user == obj.getattr('posted_by'):
+            return reverse('update-post', kwargs={"pk": obj.pk}, request=request)
+        return None
+
+    def get_delete_url(self, obj):
+        request = self.context['request']
+        if request is None:
+            return None
+        if request.user.is_authenticated and request.user == obj.getattr('posted_by'):
+            return reverse('delete-post', kwargs={"pk": obj.pk}, request=request)
+        return None
+
+
+# class DeletePostSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Post
+#         fields = ('id')
+
+
+
+# class FilterPostSerialzer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Post
+#         fields = ('id', 'posted_by', 'tmp_name', 'last_modified', 'post_title', 'tag', 'likes', 'watches', 'comments')
 
 
 class SearchPostSerialzer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ('id', 'posted_by', 'tmp_name', 'created_at', 'post_title', 'tag', 'likes', 'watches', 'comments')
+        fields = ('id', 'posted_by', 'tmp_name', 'last_modified', 'post_title', 'tag', 'likes', 'watches', 'comments')
 
 
 class SkimCollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ('id', 'posted_by', 'tmp_name', 'created_at', 'post_title', 'tag', 'likes', 'watches', 'comments')
+        fields = ('id', 'posted_by', 'tmp_name', 'last_modified', 'post_title', 'tag', 'likes', 'watches', 'comments')
 
 
 class SkimBrowserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ('id', 'posted_by', 'tmp_name', 'created_at', 'post_title', 'tag', 'likes', 'watches', 'comments')
+        fields = ('id', 'posted_by', 'tmp_name', 'last_modified', 'post_title', 'tag', 'likes', 'watches', 'comments')
 
 
 class CreateDraftSerializer(serializers.ModelSerializer):
