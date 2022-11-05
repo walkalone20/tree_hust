@@ -108,4 +108,9 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
         instance.save()
 
-        return instance
+        return Response({
+            'notion':"We've successfully reset your email address, but it hasn't been verified yet. If you don't\
+                verify it in time, you cannot login to Treehust next time.",
+            'new email':instance.email,
+            'new username':instance.username
+        },status=status.HTTP_200_OK)
