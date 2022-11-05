@@ -247,7 +247,7 @@ class CreateCommentView(generics.CreateAPIView):
 class DeleteCommentView(generics.DestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = SkimCommentSerializer
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'on'
 
@@ -270,7 +270,7 @@ class UpvoteCommentView(generics.UpdateAPIView):
     """
     queryset = Comment.objects.all()
     serializer_class = UpvoteCommentSerializer
-    lookup_field = 'pk'
+    lookup_field = 'on'
     # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
@@ -285,7 +285,7 @@ class DownvoteCommentView(generics.UpdateAPIView):
     """
     queryset = Comment.objects.all()
     serializer_class = DownvoteCommentSerializer
-    lookup_field = 'pk'
+    lookup_field = 'on'
     # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 

@@ -53,15 +53,40 @@ class SkimPostSerializer(serializers.ModelSerializer):
          'post_title', 'tag', 'likes', 'watches', 'comments')
 
 
+class SkimCommentSerializer(serializers.ModelSerializer):
+    # comment_url = serializers.SerializerMethodField(method_name='get_comment_url', read_only=True)
+    # delete_url = serializers.SerializerMethodField(method_name='get_delete_url', read_only=True)
+    class Meta:
+        model = Comment
+        fields = ('id', 'comment_under', 'comment_time', 'reply_to', # 'comment_url', 'delete_url',
+        'likes', 'hates', 'comment_content',  'comment_by', 'tmp_name')
+    
+    def get_comment_url(self, obj):
+        request = self.context['request']
+        if request is None:
+            return None
+        if request.user.is_authenticated:
+            return reverse('create-comment', kwargs={"pk": obj.pk, "on": request.kwargs.get('on')}, request=request)
+        return None
+    
+    def get_delete_url(self, obj):
+        request = self.context['request']
+        if request is None:
+            return None
+        if request.user.is_authenticated and request.user == obj.comment_by:
+            return reverse('delete-comment', kwargs={"pk": obj.pk, "on": request.kwargs.get('on')}, request=request)
+        return None 
+
+
 class OpenPostSerializer(serializers.ModelSerializer):
-    # comment = serializers.RelatedField(source='comment', many=True)
+    post_comment = SkimCommentSerializer(many=True, read_only=True)
     update_url = serializers.SerializerMethodField(method_name='get_update_url', read_only=True)
     delete_url = serializers.SerializerMethodField(method_name='get_delete_url', read_only=True)
-    comment_url = serializers.SerializerMethodField(method_name='get_comment_url', read_only=True)  # TODO: 
+    comment_url = serializers.SerializerMethodField(method_name='get_comment_url', read_only=True)
     upvote_url = serializers.SerializerMethodField(method_name='get_upvote_url', read_only=True)
     downvote_url = serializers.SerializerMethodField(method_name='get_downvote_url', read_only=True)
     has_upvoted = serializers.SerializerMethodField(method_name='get_has_upvoted', read_only=True)
-    has_downvoted = serializers.SerializerMethodField(method_name='get_has_downvoted', read_only=True)
+    has_downvoted = serializers.SerializerMethodField(method_name='get_has_downvoted', read_only=True)  
 
     class Meta:
         model = Post
@@ -237,12 +262,6 @@ class SkimBrowserSerializer(serializers.ModelSerializer):
 
 
 ############################## Comment Serializer ##################################
-class SkimCommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = ('comment_under', 'last_modified', 'likes', 'comment_content', 'reply_to', 'comment_by', 'tmp_name')
-    
-
 class CreateCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
@@ -310,7 +329,7 @@ class DownvoteCommentSerializer(serializers.ModelSerializer):
             instance.hates+=1
 
         instance.save()
-        
+
         return instance
 
 ############################## Draft Serializer##########################
