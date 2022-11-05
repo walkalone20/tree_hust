@@ -5,6 +5,7 @@ from rest_framework.reverse import reverse
 from django.utils import timezone
 
 
+############################# Post Serializer##################################
 class CreatePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
@@ -147,8 +148,23 @@ class VotePostSerializer(serializers.ModelSerializer):
 
         instance.vote.add(request.user)
         return super().update(instance, validated_data)
-    
 
+
+class SkimCollectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ('id', 'posted_by', 'tmp_name', 'last_modified', 'post_title', 'tag', 'likes', 'watches', 'comments')
+
+
+class SkimBrowserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ('id', 'posted_by', 'tmp_name', 'last_modified', 'post_title', 'tag', 'likes', 'watches', 'comments')
+
+
+
+
+############################## Comment Serializer ##################################
 class SkimCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
@@ -183,78 +199,93 @@ class CreateCommentSerializer(serializers.ModelSerializer):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-class SkimCollectionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = ('id', 'posted_by', 'tmp_name', 'last_modified', 'post_title', 'tag', 'likes', 'watches', 'comments')
-
-
-
-
-
-class SkimBrowserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = ('id', 'posted_by', 'tmp_name', 'last_modified', 'post_title', 'tag', 'likes', 'watches', 'comments')
-
-
+############################## Draft Serializer##########################
 class CreateDraftSerializer(serializers.ModelSerializer):
     class Meta:
         model = Draft
         fields = ('drafted_by', 'draft_title', 'draft_content', 'tag')
 
+    def create(self, validated_data):
+        request = self.context.get('request')
+        draft = Draft()
+        draft.draft_title = validated_data['draft_title']
+        draft.draft_content = validated_data['draft_content']   
+        draft.tag = validated_data['tag']
 
-class DeleteDraftSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Draft
-        fields = ('id')
+        if request.user.is_authenticated:
+            draft.drafted_by = request.user
+            draft.save()
+            return draft
+        else:
+            raise serializers.ValidationError({"detailed": "please login first!"})
+
+
+# class DeleteDraftSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Draft
+#         fields = ('id')
 
 
 class SkimDraftSerializer(serializers.ModelSerializer):
+    open_url = serializers.HyperlinkedIdentityField(view_name='open-draft', lookup_field='pk', read_only=True)
+
     class Meta:
         model = Draft
-        fields = ('id', 'drafted_by', 'draft_title', 'draft_content', 'tag')
+        fields = ('id', 'open_url', 'drafted_by', 'draft_title', 'tag')
 
 
-class OpenDraftSerializer(serializers.ModelSerializer): # FIXME: ??
+class OpenDraftSerializer(serializers.ModelSerializer):
+    update_url = serializers.SerializerMethodField(method_name='get_update_url', read_only=True)
+    delete_url = serializers.SerializerMethodField(method_name='get_delete_url', read_only=True)
+    upload_url = serializers.SerializerMethodField(method_name='get_upload_url', read_only=True)
+
     class Meta:
         model = Draft
-        fields = ('id')
+        fields = ('id', 'update_url', 'delete_url', 'upload_url', 'drafted_by', 
+        'draft_title', 'draft_content', 'tag')
+    
+    def get_update_url(self, obj):
+        request = self.context['request']
+        if request is None:
+            return None
+        if request.user.is_authenticated and request.user == obj.drafted_by:
+            return reverse('update-draft', kwargs={"pk": obj.pk}, request=request)
+        return None
+
+    def get_delete_url(self, obj):
+        request = self.context['request']
+        if request is None:
+            return None
+        if request.user.is_authenticated and request.user == obj.drafted_by:
+            return reverse('delete-draft', kwargs={"pk": obj.pk}, request=request)
+        return None   
+
+    def get_upload_url(self, obj):
+        request = self.context['request']
+        if request is None:
+            return None
+        if request.user.is_authenticated and request.user == obj.drafted_by:
+            return reverse('upload-draft', kwargs={"pk": obj.pk}, request=request)
+        return None
 
 
 class UpdateDraftSerializer(serializers.ModelSerializer):
     class Meta:
         model = Draft
         fields = ('draft_title', 'draft_content', 'tag')
-        extra_kwargs = {
-            'draft_title': {'required': True},
-            'tag': {'required': True},
-        }
+        # extra_kwargs = {
+        #     'draft_title': {'required': True},
+        #     'tag': {'required': True},
+        # }
 
     def update(self, instance, validated_data):
-            draft = self.context['request'].draft
+        request = self.context['request']
+        if not request.user.is_authenticated:
+            raise serializers.ValidationError({"message": "当前尚未登陆"})
+        if request.user != instance.drafted_by:
+            raise serializers.ValidationError({"message": "没有权限"})
 
-            if draft.pk != instance.pk:
-                raise serializers.ValidationError({"authorize": "You dont have permission for this draft."})
-
-            instance.draft_title = validated_data['draft_title']
-            instance.draft_content = validated_data['draft_content']
-            instance.tag = validated_data['tag']
-
-            instance.save()
-
-            return instance
+        return super().update(instance, validated_data)
 
 
 # class DeletePostSerializer(serializers.ModelSerializer):
