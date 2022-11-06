@@ -41,5 +41,9 @@ food = ["蒸羊羔", "蒸熊掌", "蒸鹿尾儿", "烧花鸭", "烧雏鸡", "烧
         "过桥米线", "咖喱鸡排", "萝卜炖排骨面", "鸡皇石锅", "鸡柳铁板", "皮蛋瘦肉粥", "三鲜火锅", "红烧肉拌面", "野山菇汤",
         "排骨粉丝煲", "卤猪蹄", "麻辣鸡饭", "炸酱刀削面", "海鲜火锅", "羊肉粉", "猪肝粉丝汤", "蒸饺"]
 
-def generate_name_food():
-        return random.choice(restaurant) + random.choice(food)
+def generate_name_food(post_id, user_id):
+        random.seed(post_id, user_id)
+        name1=random.choice(restaurant)
+        random.seed(post_id, user_id)
+        name2=random.choice(food)
+        return name1 + name2

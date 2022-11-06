@@ -23,7 +23,7 @@ from .models import Post, Draft, Comment
 
 
 from .serializer import CreatePostSerializer, SkimPostSerializer, OpenPostSerializer
-from .serializer import SkimBrowserSerializer, CreateDraftSerializer
+from .serializer import CreateDraftSerializer
 from .serializer import SkimDraftSerializer, OpenDraftSerializer, UpdateDraftSerializer
 from .serializer import UpdatePostSerializer, UpvotePostSerializer, DownvotePostSerializer
 from .serializer import UpvoteCommentSerializer, DownvoteCommentSerializer, CreateCommentSerializer

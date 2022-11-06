@@ -20,7 +20,6 @@ class Post(models.Model):
 
     posted_by = models.ForeignKey(User, on_delete=models.CASCADE,
         related_name='user_post', verbose_name="posted by some user")  # & 发帖人
-    tmp_name = models.CharField(null=False, default=generate_random_name, max_length=20)
     last_modified = models.DateTimeField(auto_now_add=True)   # * 发帖时间 (generated automatically)
     post_title = models.TextField(null=False)   # 帖子标题
     post_content = models.TextField(null=False)  # 帖子内容
@@ -64,7 +63,6 @@ class Draft(models.Model):
 
 
 class Comment(models.Model):
-    tmp_name = models.CharField(null=False, default=generate_random_name, max_length=20)
     comment_under = models.ForeignKey(Post, on_delete=models.CASCADE, 
         related_name='post_comment', verbose_name="comment under some post") # & 在某个帖子下的所有评论
     comment_by = models.ForeignKey(User, on_delete=models.CASCADE, 

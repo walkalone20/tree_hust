@@ -3,6 +3,8 @@ from .models import Post, Draft, Comment
 from Tools import check
 from rest_framework.reverse import reverse
 from django.utils import timezone
+from Tools.random_name import generate_random_name
+from Tools.random_avatar import generate_random_avatar
 
 
 ############################# Post Serializer##################################
@@ -59,8 +61,20 @@ class SkimCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('id', 'comment_under', 'comment_time', 'reply_to', # 'comment_url', 'delete_url',
-        'likes', 'hates', 'comment_content',  'comment_by', 'tmp_name')
+        'likes', 'hates', 'comment_content',  'comment_by', 'tmp_name', 'avatar')
+
+    def get_avatar(self, obj):
+        request = self.context['request']
+        if request is None:
+            return None
+        return generate_random_avatar(obj.id,obj.comment_by)
     
+    def get_tmp_name(self, obj):
+        request = self.context['request']
+        if request is None:
+            return None
+        return generate_random_name(obj.id,obj.comment_by)
+
     def get_comment_url(self, obj):
         request = self.context['request']
         if request is None:
@@ -92,9 +106,21 @@ class OpenPostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'update_url', 'delete_url', 'comment_url', 'upvote_url', 'downvote_url', 'collect_url', 
+        fields = ('id', 'tmp_name', 'avatar', 'update_url', 'delete_url', 'comment_url', 'upvote_url', 'downvote_url', 'collect_url', 
            'has_upvoted', 'has_downvoted', 'has_collected', 'posted_by', 'tmp_name','post_title', 'post_content', 
            'last_modified', 'likes', 'hates', 'watches', 'comments', 'stars', 'tag', 'post_comment')
+
+    def get_avatar(self, obj):
+        request = self.context['request']
+        if request is None:
+            return None
+        return generate_random_avatar(obj.id,obj.comment_by)
+    
+    def get_tmp_name(self, obj):
+        request = self.context['request']
+        if request is None:
+            return None
+        return generate_random_name(obj.id,obj.posted_by)
 
     def get_update_url(self, obj):
         request = self.context['request']
