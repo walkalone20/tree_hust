@@ -14,22 +14,22 @@ class CreatePostSerializer(serializers.ModelSerializer):
         fields = ('post_title', 'post_content', 'tag')
 
     def validate_post_title(self, value):
-        if not check(value):
-            raise serializers.ValidationError({'message': '标题不合法'})
+        if not value:
+            raise serializers.ValidationError({'message': '标题为空'})
 
-        return value
+        return check(value)
 
     def validate_post_content(self, value):
-        if not check(value):
-            raise serializers.ValidationError({'message': '内容不合法'})
+        if not value:
+            raise serializers.ValidationError({'message': '内容为空'})
 
-        return value
+        return check(value)
 
     def create(self, validated_data):
         request = self.context.get('request')
         post = Post()
-        post.post_title = validated_data['post_title']
-        post.post_content = validated_data['post_content']   
+        post.post_title = check(validated_data['post_title'])
+        post.post_content = check(validated_data['post_content'])
         post.tag = validated_data['tag']
 
         if request.user.is_authenticated:
@@ -251,16 +251,16 @@ class UpdatePostSerializer(serializers.ModelSerializer):
         fields = ('post_title', 'post_content')
 
     def validate_post_title(self, value):
-        if not check(value):
-            raise serializers.ValidationError({'message': '标题不合法'})
+        if not value:
+            raise serializers.ValidationError({'message': '标题为空'})
 
-        return value
+        return check(value)
 
     def validate_post_content(self, value):
-        if not check(value):
-            raise serializers.ValidationError({'message': '内容不合法'})
+        if not value:
+            raise serializers.ValidationError({'message': '内容为空'})
 
-        return value
+        return check(value)
 
     def update(self, instance, validated_data):
         request = self.context['request']
@@ -379,10 +379,9 @@ class CreateCommentSerializer(serializers.ModelSerializer):
         fields = ('comment_content', 'comment_under')
 
     def validate_comment_content(self, value):
-        if not check(value):
-            raise serializers.ValidationError({'message': '评论内容不合法'})
-
-        return value
+        if not value:
+            raise serializers.ValidationError({'message': '评论它没内容啊'})
+        return check(value)
 
 
 class UpvoteCommentSerializer(serializers.ModelSerializer):
@@ -452,8 +451,8 @@ class CreateDraftSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context.get('request')
         draft = Draft()
-        draft.draft_title = validated_data['draft_title']
-        draft.draft_content = validated_data['draft_content']   
+        draft.draft_title = check(validated_data['draft_title'])
+        draft.draft_content = check(validated_data['draft_content'])   
         draft.tag = validated_data['tag']
 
         if request.user.is_authenticated:
