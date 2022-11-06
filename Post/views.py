@@ -371,24 +371,24 @@ class DownvoteCommentView(generics.UpdateAPIView):
 
 
 ##################################### Draft View ############################################
-class CreateDraftView(APIView):
+class CreateDraftView(generics.CreateAPIView):
+    """
+    创建一个草稿
+    @url: /draft/create
+    @method: post
+    @param: draft_title, draft_content, tag
+    @return: 创建成功的帖子的部分信息
+    """
+    queryset = Draft.objects.all()
     serializer_class = CreateDraftSerializer
-    
-    @login_required
-    def post(self, request, format=None):
-        serializer= self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            drafted_by = User.objects.filter(id=self.request.user.id)
-            draft_title = serializer.data.get('draft_title')
-            draft_content = serializer.data.get('draft_content')
-            tag = serializer.data.get('tag')
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
-            draft = Draft(draft_content=draft_content, tag=tag, draft_title=draft_title, drafted_by=drafted_by)
-            draft.save()
-
-            return Response(draft.data, status=status.HTTP_201_CREATED)
-
-        return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        draft_title = serializer.validated_data.get('draft_title')
+        draft_content = serializer.validated_data.get('draft_content')
+        tag = serializer.validated_data.get('tag')
+        serializer.save(draft_title=draft_title, draft_content=draft_content, tag=tag)
     
 
 # class oldDeleteDraftView(APIView):
