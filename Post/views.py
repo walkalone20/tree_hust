@@ -4,10 +4,8 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import permissions,generics, status, mixins
+from rest_framework import permissions,generics
 # ^ status: allows us to get access to http status 
-from django.contrib.auth.models import AnonymousUser, User
-from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework import permissions, generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -17,8 +15,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from django.utils import timezone
 
-
-from User.models import User
 from .models import Post, Draft, Comment
 
 
@@ -29,7 +25,6 @@ from .serializer import UpdatePostSerializer, UpvotePostSerializer, DownvotePost
 from .serializer import UpvoteCommentSerializer, DownvoteCommentSerializer, CreateCommentSerializer
 from .serializer import SkimCommentSerializer, CollectPostSerializer
 
-from .permissions import IsOwnerOrReadOnlyPermission
 
 ##################################### Post View ################################################
 class CreatePostView(generics.CreateAPIView):
