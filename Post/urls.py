@@ -14,6 +14,9 @@ urlpatterns = [
     path('post/<int:pk>/delete/', DeletePostView.as_view(), name='delete-post'),
     path('post/<int:pk>/', OpenPostView.as_view(), name='open-post'),
     path('post/<int:pk>/update/', UpdatePostView.as_view(), name='update-post'),
+    
+    # * post browser history
+    path('post/browser', SkimBrowserView.as_view()),
 
     # * upvote and downvote on post
     path('post/<int:pk>/upvote/', UpvotePostView.as_view(), name='upvote-post'),
@@ -22,9 +25,6 @@ urlpatterns = [
     # * post collections
     path('post/<int:pk>/collect/', CollectPostView.as_view(), name='collect-post'),   # collect and uncollect
     path('post/collection/', SkimCollectionView.as_view(), name='skim-collection'),
-    
-    # * post browser history
-    path('post/browser', SkimBrowserView.as_view()),
     
     # * comment implementation
     path('post/<int:pk>/comment/<int:on>', CreateCommentView.as_view(), name='create-comment'),

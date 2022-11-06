@@ -92,9 +92,9 @@ class OpenPostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'update_url', 'delete_url', 'comment_url', 'upvote_url', 'downvote_url', 'has_upvoted',
-           'has_downvoted', 'posted_by', 'tmp_name','post_title', 'post_content', 'last_modified', 'likes', 'hates',
-           'watches', 'comments', 'tag', 'post_comment')
+        fields = ('id', 'update_url', 'delete_url', 'comment_url', 'upvote_url', 'downvote_url', 'collect_url', 
+           'has_upvoted', 'has_downvoted', 'has_collected', 'posted_by', 'tmp_name','post_title', 'post_content', 
+           'last_modified', 'likes', 'hates', 'watches', 'comments', 'stars', 'tag', 'post_comment')
 
     def get_update_url(self, obj):
         request = self.context['request']

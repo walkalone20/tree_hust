@@ -15,6 +15,7 @@ from rest_framework.authentication import TokenAuthentication
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from django.utils import timezone
 
 
 from User.models import User
@@ -104,6 +105,19 @@ class OpenPostView(generics.RetrieveAPIView):
     lookup_field = 'pk'
     # TODO: 显示相关评论
     # TODO: 增加浏览记录
+
+    def retrieve(self, request, *args, **kwargs):
+        pk = self.kwargs.get('pk')
+        post = Post.objects.filter(id=pk).first()
+
+        if self.request.user not in post.browser.all():
+            post.browser.add(self.request.user, through_defaults={"browser_time": timezone.now()})
+            post.watches += 1
+            post.save()
+        else:
+            post.browser.get(self.self.request.user)
+            post.browser.add(self.request.user, through_defaults={"browser_time": timezone.now()})
+        return super().retrieve(request, *args, **kwargs)
     
     
 class UpdatePostView(generics.UpdateAPIView):
@@ -174,7 +188,23 @@ class DownvotePostView(generics.UpdateAPIView):
 
 
 class SkimBrowserView(generics.ListAPIView):
-    pass
+    """
+    概览自己浏览的
+    @url: /post/browser
+    @method: get
+    @param: 
+    @return: 当前用户浏览的所有帖子
+    """
+    queryset = Post.objects.all()
+    serializer_class = SkimPostSerializer
+    model = Post
+
+    def get_queryset(self, *args, **kwargs):
+        request = self.request
+        qs = super().get_queryset(*args, **kwargs)
+        browser = request.user.user_browser.all()    # FIXME: all?
+        qs = qs.filter(id__in=browser)
+        return qs
 
 
 # class BrowserListView(APIView):
@@ -214,8 +244,8 @@ class SkimCollectionView(generics.ListAPIView):
 
     def get_queryset(self, *args, **kwargs):
         request = self.request
-        qs = super().get_queryset()
-        collections = request.user.user_collection.all()
+        qs = super().get_queryset(*args, **kwargs)
+        collections = request.user.user_collection.all()    # FIXME: all?
         qs = qs.filter(id__in=collections)
         return qs
 
@@ -233,7 +263,7 @@ class SkimCollectionView(generics.ListAPIView):
 #         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
 
 #     @login_required
-#     def delete(self, request):  # FIXME: delete 方法有问题
+#     def delete(self, request):
 #         post = get_object_or_404(Post, slug=request.data.get('slug'))
 #         if request.user in post.favourite.all():
 #             post.favourite.remove(request.user)
@@ -272,18 +302,23 @@ class CreateCommentView(generics.CreateAPIView):
         comment_under = Post.objects.filter(id=self.kwargs.get('pk')).first()
         comment.comment_under = comment_under
 
+
         reply_to = Comment.objects.filter(id=self.kwargs.get('on')).first()
         comment.reply_to = reply_to
 
         if self.request.user.is_authenticated:
             comment.comment_by = self.request.user
             comment.save()
+            # 更新评论数
+            post = Post.objects.filter(id=comment_under.id).first()
+            post.comments += 1
+            post.save()
             return comment
         else:
             raise serializers.ValidationError({"detailed": "please login first!"})
 
 
-class DeleteCommentView(generics.DestroyAPIView):
+class DeleteCommentView(generics.DestroyAPIView): # TODO: 删除评论后评论数 comments 减一
     queryset = Comment.objects.all()
     serializer_class = SkimCommentSerializer
     # authentication_classes = [TokenAuthentication]
@@ -296,6 +331,7 @@ class DeleteCommentView(generics.DestroyAPIView):
         return qs.filter(comment_by=request.user)
     
     def perform_destroy(self, instance):
+        self.kwargs
         return super().perform_destroy(instance)
 
 
@@ -312,6 +348,9 @@ class UpvoteCommentView(generics.UpdateAPIView):
     lookup_field = 'on'
     # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+    
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
 
 
 class DownvoteCommentView(generics.UpdateAPIView):
