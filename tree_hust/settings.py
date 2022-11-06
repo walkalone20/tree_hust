@@ -95,11 +95,11 @@ DATABASES = {
     'default': 
     { 
         'ENGINE': 'django.db.backends.mysql',    # 数据库引擎
-        'NAME': 'tree_hust', # 数据库名称
+        'NAME': 'treehust', # 数据库名称
         'HOST': '127.0.0.1', # 数据库地址，本机 ip 地址 127.0.0.1
         'PORT': 3306, # 端口
         'USER': 'root',  # 数据库用户名
-        'PASSWORD': 'AnyuElin10', # 数据库密码
+        'PASSWORD': '123456', # 数据库密码
     }  
 }
 
@@ -145,7 +145,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-    ]
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
