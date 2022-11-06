@@ -532,13 +532,13 @@ class UploadDraftView(generics.DestroyAPIView):
         post = Post()
         post.posted_by = request.user
 
-        if instance.draft_title is None or not check(instance.draft_title):
-            raise serializers.ValidationError({"message": "标题不合法"})
-        post.post_title = instance.draft_title
+        if not instance.draft_title:
+            raise serializers.ValidationError({"message": "标题为空"})
+        post.post_title = check(instance.draft_title)
 
-        if instance.draft_content is None or not check(instance.draft_content):
-            raise serializers.ValidationError({"message": "内容不合法"})
-        post.post_content = instance.draft_content
+        if not instance.draft_content:
+            raise serializers.ValidationError({"message": "内容为空"})
+        post.post_content = check(instance.draft_content)
 
         if instance.tag is None:
             raise serializers.ValidationError({"message": "标签不合法"})
