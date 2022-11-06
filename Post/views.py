@@ -110,7 +110,7 @@ class OpenPostView(generics.RetrieveAPIView):
         pk = self.kwargs.get('pk')
         post = Post.objects.filter(id=pk).first()
 
-        if self.request.user not in post.browser.all():
+        if self.request.user.is_authenticated and self.request.user not in post.browser.all():
             post.browser.add(self.request.user)
             post.watches += 1
             post.save()

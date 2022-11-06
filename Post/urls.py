@@ -32,7 +32,6 @@ urlpatterns = [
     path('post/comment/<int:pk>/upvote', UpvoteCommentView.as_view(), name='upvote-comment'),
     path('post/comment/<int:pk>/downvote', DownvoteCommentView.as_view(), name='downvote-comment'),
 
-
     # * draft implementation
     path('draft/', SkimDraftView.as_view(), name='skim-draft'),
     path('draft/<int:pk>/', OpenDraftView.as_view(), name='open-draft'),
