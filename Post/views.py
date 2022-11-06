@@ -293,9 +293,9 @@ class SkimCollectionView(generics.ListAPIView):
 class CreateCommentView(generics.CreateAPIView):
     """
     发布一个评论
-    @url: /post/<int:pk>/comment/<int:on>
+    @url: /post/<int:pk>/comment
     @method: post
-    @param: reply_to, comment_under
+    @param: comment_under
     @return: 
     """
     queryset = Comment.objects.all()
