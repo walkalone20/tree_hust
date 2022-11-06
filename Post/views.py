@@ -34,15 +34,15 @@ from .permissions import IsOwnerOrReadOnlyPermission
 ##################################### Post View ################################################
 class CreatePostView(generics.CreateAPIView):
     """
-    创建一个帖子
+    创建一个帖子, 需要处于登录状态
     @url: /post/create/
     @method: post
     @param: post_title, post_content, tag
-    @return: 创建成功的帖子的部分信息
+    @return: 创建成功的帖子的对应信息
     """
     queryset = Post.objects.all()
     serializer_class = CreatePostSerializer
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     # permission_classes = [IsOwnerOrReadOnlyPermission]
 
@@ -55,11 +55,11 @@ class CreatePostView(generics.CreateAPIView):
 
 class SkimPostView(generics.ListAPIView):
     """
-        根据tag和search对帖子进行筛选和对帖子内容搜索, 并根据ordering排序, 均为可选参数
-        @url: /post/
-        @method: get
-        @param: tag, ordering, search
-        @return: 满足tag的所有帖子信息的概览
+    根据tag和search对帖子进行筛选和对帖子内容搜索, 并根据ordering排序, 均为可选参数
+    @url: /post/
+    @method: get
+    @param: [tag], [ordering], [search]
+    @return: 所有帖子信息的概览
     """
     queryset = Post.objects.all()
     serializer_class = SkimPostSerializer
@@ -70,16 +70,16 @@ class SkimPostView(generics.ListAPIView):
     ording = ['last_modified']
     search_fields = ['post_title', 'post_content']
     
-    # TODO: add pagination
+    # TODO: add pagination?
 
 
 class MyPostView(generics.ListAPIView):
     """
-    浏览自己发的的帖子
+    浏览自己发的的帖子, 需要处于登录状态
     @url: /post/my/
     @method: get
     @param: null
-    @return: 用户的帖子的概要信息
+    @return: 用户自己创建的帖子的概要信息
     """
     queryset = Post.objects.all()
     serializer_class = SkimPostSerializer
@@ -94,7 +94,7 @@ class MyPostView(generics.ListAPIView):
 
 class OpenPostView(generics.RetrieveAPIView):
     """
-    点进一个帖子
+    点进一个帖子浏览详细信息
     @url: /post/<int:pk>/
     @method: get
     @param: null
@@ -103,8 +103,6 @@ class OpenPostView(generics.RetrieveAPIView):
     serializer_class = OpenPostSerializer
     queryset = Post.objects.all()
     lookup_field = 'pk'
-    # TODO: 显示相关评论
-    # TODO: 增加浏览记录
 
     def retrieve(self, request, *args, **kwargs):
         pk = self.kwargs.get('pk')
@@ -127,10 +125,10 @@ class OpenPostView(generics.RetrieveAPIView):
     
 class UpdatePostView(generics.UpdateAPIView):
     """
-    根据tag对帖子进行编辑
+    对帖子标题和内容进行编辑, 需要owner验证
     @url: /post/<int:pk>/update/
     @method: put
-    @param: post_title, post_content (, last_modified)
+    @param: post_title, post_content
     @return: update后的帖子的部分信息
     """
     queryset = Post.objects.all()
@@ -142,7 +140,7 @@ class UpdatePostView(generics.UpdateAPIView):
 
 class DeletePostView(generics.DestroyAPIView):
     """
-    删除一个帖子
+    删除一个帖子, 需要owner验证
     @url: /post/<int:pk>/delete/
     @method: delete
     @param: null
@@ -165,51 +163,51 @@ class DeletePostView(generics.DestroyAPIView):
 
 class UpvotePostView(generics.UpdateAPIView):
     """
-    upvote一个帖子
+    upvote一个帖子, 需要登录
     @url: /post/<int:pk>/upvote/
     @method: put
     @param: likes
-    @return: 
+    @return: upvote后的likes
     """
     queryset = Post.objects.all()
     serializer_class = UpvotePostSerializer
     lookup_field = 'pk'
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
 class DownvotePostView(generics.UpdateAPIView):
     """
-    downvote一个帖子
+    downvote一个帖子, 需要登录
     @url: /post/<int:pk>/downvote/
     @method: put
     @param: hates
-    @return: 
+    @return: downvote后的hates
     """
     queryset = Post.objects.all()
     serializer_class = DownvotePostSerializer
     lookup_field = 'pk'
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
 
 class SkimBrowserView(generics.ListAPIView):
     """
-    概览自己浏览的
-    @url: /post/browser
+    概览自己浏览过的所有信息, 需要登录
+    @url: /post/browser/
     @method: get
-    @param: 
-    @return: 当前用户浏览的所有帖子
+    @param: null
+    @return: 当前用户浏览的所有帖子的一些信息(包括浏览的时间)
     """
     queryset = Post.objects.all()
     serializer_class = SkimBrowserSerializer
     model = Post
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self, *args, **kwargs):
         request = self.request
         qs = super().get_queryset(*args, **kwargs)
-        browser = request.user.user_browser.all()    # FIXME: all?
+        browser = request.user.user_browser.all()
         qs = qs.filter(id__in=browser)
         return qs
 
@@ -224,22 +222,22 @@ class SkimBrowserView(generics.ListAPIView):
 
 class CollectPostView(generics.UpdateAPIView):
     """
-    收藏一个帖子
+    收藏一个帖子, 需要登录
     @url: /post/<int:pk>/collect
     @method: put
     @param: stars
-    @return: 当前用户收藏的所有帖子
+    @return: 当前用户收藏的帖子
     """
     queryset = Post.objects.all()
     serializer_class = CollectPostSerializer
     lookup_field = 'pk'
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
 
 class SkimCollectionView(generics.ListAPIView):
     """
-    概览自己收藏的
+    概览自己收藏的帖子, 需要登录
     @url: /post/collection
     @method: get
     @param: 
@@ -248,17 +246,16 @@ class SkimCollectionView(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = SkimCollectionSerializer
     model = Post
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self, *args, **kwargs):
         request = self.request
         qs = super().get_queryset(*args, **kwargs)
-        collections = request.user.user_collection.all()    # FIXME: all?
+        collections = request.user.user_collection.all()
         qs = qs.filter(id__in=collections)
 
         return qs
-
 
 
 # class CollectionView(APIView):
@@ -293,15 +290,15 @@ class SkimCollectionView(generics.ListAPIView):
 ##################################### Comment View #####################################
 class CreateCommentView(generics.CreateAPIView):
     """
-    发布一个评论
+    发布一个评论, 其中pk=0表示对帖子进行评论, pk!=0则表示对编号为pk的帖子进行评论(使用url进行评论更简便)
     @url: /post/<int:pk>/comment
     @method: post
     @param: comment_under
-    @return: 
+    @return: 发布的评论的部分内容
     """
     queryset = Comment.objects.all()
     serializer_class = CreateCommentSerializer
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
@@ -330,9 +327,16 @@ class CreateCommentView(generics.CreateAPIView):
 
 
 class DeleteCommentView(generics.DestroyAPIView):
+    """
+    删除一个评论, 需要登录, 对编号为pk的帖子进行删除(使用url更简便)
+    @url: /post/<int:pk>/delete
+    @method: delete
+    @param: comment_under
+    @return: 删除的评论的概要内容
+    """
     queryset = Comment.objects.all()
     serializer_class = SkimCommentSerializer
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'pk'
 
@@ -351,12 +355,12 @@ class UpvoteCommentView(generics.UpdateAPIView):
     @url: /post/comment/<int:pk>/upvote/
     @method: put
     @param: likes
-    @return: 
+    @return: upvote之后的likes
     """
     queryset = Comment.objects.all()
     serializer_class = UpvoteCommentSerializer
     lookup_field = 'pk'
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -366,12 +370,12 @@ class DownvoteCommentView(generics.UpdateAPIView):
     @url: /post/comment/<int:pk>/downvote/
     @method: put
     @param: hates
-    @return: 
+    @return: downvote之后的hates
     """
     queryset = Comment.objects.all()
     serializer_class = DownvoteCommentSerializer
     lookup_field = 'pk'
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -380,15 +384,15 @@ class DownvoteCommentView(generics.UpdateAPIView):
 ##################################### Draft View ############################################
 class CreateDraftView(generics.CreateAPIView):
     """
-    创建一个草稿
+    在草稿箱中创建一个草稿, title和content均为可选参数, tag必选
     @url: /draft/create
     @method: post
-    @param: draft_title, draft_content, tag
-    @return: 创建成功的帖子的部分信息
+    @param: [draft_title], [draft_content], tag
+    @return: 创建成功的草稿的部分信息
     """
     queryset = Draft.objects.all()
     serializer_class = CreateDraftSerializer
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
@@ -411,26 +415,24 @@ class CreateDraftView(generics.CreateAPIView):
 #         drafted_by = draft.get('drafted_by')
 #         if self.request.user.id != drafted_by.id:
 #             return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
-#         # ^ 判断是否有删除的权限
 
 #         draft.delete()
-#         # ^ 因为设置了on_delete=CASCADE, 也同时删除了附着在帖子下面的评论
 
 #         return Response(request.data, status=status.HTTP_200_OK)
 
 
 class SkimDraftView(generics.ListAPIView):
     """
-        总览草稿
+        总览草稿箱中的草稿内容
         @url: /draft/
         @method: get
-        @param: 
+        @param: null
         @return: 所有草稿信息的概览
     """
     model = Draft
     queryset = Draft.objects.all()
     serializer_class = SkimDraftSerializer
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self, *args, **kwargs):
@@ -441,16 +443,16 @@ class SkimDraftView(generics.ListAPIView):
 
 class OpenDraftView(generics.RetrieveAPIView):
     """
-    点进一个帖子
+    点进一个草稿
     @url: /draft/<int:pk>/
     @method: get
     @param: null
-    @return: 帖子的所有信息和评论的信息
+    @return: 草稿中的信息, (前端将其送到编辑框中, 即保留了草稿的编辑状态)
     """
     serializer_class = OpenDraftSerializer
     queryset = Draft.objects.all()
     lookup_field = 'pk'
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
@@ -461,16 +463,16 @@ class OpenDraftView(generics.RetrieveAPIView):
 
 class UpdateDraftView(generics.UpdateAPIView):
     """
-    对草稿进行编辑
+    对草稿的新的编辑结果进行上传
     @url: /draft/<int:pk>/update/
     @method: put
-    @param: draft_title, draft_content
+    @param: [draft_title], [draft_content]
     @return: update后的draft的部分信息
     """
     queryset = Draft.objects.all()
     serializer_class = UpdateDraftSerializer
     lookup_field = 'pk'
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
@@ -481,15 +483,15 @@ class UpdateDraftView(generics.UpdateAPIView):
 
 class DeleteDraftView(generics.DestroyAPIView):
     """
-    删除一个草稿
+    删除草稿箱中的某一个草稿
     @url: /draft/<int:pk>/delete/
     @method: delete
     @param: null
-    @return: 是否删除成功 
+    @return: 删除的草稿的部分内容
     """
     queryset = Draft.objects.all()
     serializer_class = SkimDraftSerializer   # ? 没搞懂什么鬼
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'pk'
 
@@ -504,16 +506,16 @@ class DeleteDraftView(generics.DestroyAPIView):
 
 class UploadDraftView(generics.DestroyAPIView):
     """
-    上传一个草稿
+    上传一个草稿(将原来的草稿删除, 然后将其中的内容上传到post数据库中, 如果内容审核没有通过则不删除)
     @url: /draft/<int:pk>/upload/
     @method: delete
-    @param: null
-    @return: 是否删除成功 
+    @param: nulww
+    @return: 上传的草稿的内容
     """
 
     queryset = Draft.objects.all()
     serializer_class = OpenDraftSerializer   # ? 没搞懂什么鬼
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'pk'
 
@@ -548,8 +550,6 @@ class UploadDraftView(generics.DestroyAPIView):
         return super().perform_destroy(instance)   
 
 
-
-
 # class oldCreatePostView(APIView):
 #     serializer_class = CreatePostSerializer
 
@@ -582,10 +582,8 @@ class UploadDraftView(generics.DestroyAPIView):
 #         posted_by = post.get('posted_by')
 #         if not request.user.is_authenticated or self.request.user != posted_by:
 #             return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
-#         # ^ 判断是否有删除的权限
 
 #         post.delete()
-#         # ^ 因为设置了on_delete=CASCADE, 也同时删除了附着在帖子下面的评论
 
 #         return Response(request.data, status=status.HTTP_200_OK)
 

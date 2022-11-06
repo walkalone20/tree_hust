@@ -377,7 +377,6 @@ class SkimCollectionSerializer(serializers.ModelSerializer):
         return user.star_time
 
 
-
 class SkimBrowserSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField(method_name='get_comments', read_only=True)
     open_url = serializers.HyperlinkedIdentityField(view_name='open-post', lookup_field='pk', read_only=True)
@@ -396,6 +395,7 @@ class SkimBrowserSerializer(serializers.ModelSerializer):
         request=self.context['request']
         user = obj.browser_history_set.filter(user=request.user).first()
         return user.browser_time
+
 
 
 
@@ -440,6 +440,7 @@ class UpvoteCommentSerializer(serializers.ModelSerializer):
 
         return instance
 
+
 class DownvoteCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
@@ -468,6 +469,9 @@ class DownvoteCommentSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+
 
 ############################## Draft Serializer##########################
 class CreateDraftSerializer(serializers.ModelSerializer):
