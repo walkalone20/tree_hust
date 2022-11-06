@@ -37,14 +37,14 @@ class Post(models.Model):
         related_name='downvote_post', blank=True)   # & downvote帖子
     collection = models.ManyToManyField(User, verbose_name="collected by some user", 
         related_name='user_collection', blank=True)  # & 收藏帖子
-    browser = models.ManyToManyField(User, verbose_name="browsered by some user", through='browser_history',
+    browser = models.ManyToManyField(User, verbose_name="browsered by some user", # through='browser_history',
         related_name='user_browser', blank=True)   # & 浏览记录
 
 
-class browser_history(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    browser_time = models.DateTimeField(auto_now_add=True)
+# class browser_history(models.Model):
+#     post = models.ForeignKey(Post, on_delete=models.CASCADE)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     browser_time = models.DateTimeField(auto_now_add=True)
 
 
 class Draft(models.Model):

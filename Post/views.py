@@ -198,6 +198,8 @@ class SkimBrowserView(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = SkimPostSerializer
     model = Post
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self, *args, **kwargs):
         request = self.request
@@ -241,6 +243,8 @@ class SkimCollectionView(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = SkimPostSerializer
     model = Post
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self, *args, **kwargs):
         request = self.request
