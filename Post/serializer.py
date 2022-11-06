@@ -79,13 +79,13 @@ class SkimCommentSerializer(serializers.ModelSerializer):
         request = self.context['request']
         if request is None:
             return None
-        return generate_random_avatar(obj.id, obj.comment_by.id)
+        return generate_random_avatar(obj.comment_under.id, obj.comment_by.id)
     
     def get_tmp_name(self, obj):
         request = self.context['request']
         if request is None:
             return None
-        return generate_random_name(obj.id, obj.comment_by.id)
+        return generate_random_name(obj.comment_under.id, obj.comment_by.id)
 
     def get_comment_url(self, obj):
         request = self.context['request']
@@ -416,7 +416,7 @@ class UpvoteCommentSerializer(serializers.ModelSerializer):
 class DownvoteCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ('likes', )
+        fields = ('hates', )
 
     def update(self, instance, validated_data):
         request = self.context['request'] 
