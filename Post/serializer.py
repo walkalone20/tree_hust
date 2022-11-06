@@ -53,8 +53,8 @@ class SkimPostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'open_url', 'posted_by', 'last_modified',
-         'post_title', 'tag', 'likes', 'watches', 'comments')
+        fields = ('id', 'open_url', 'posted_by', 'last_modified', 
+         'post_title', 'tag', 'likes', 'stars', 'watches', 'comments')
 
     def get_comments(self, obj):
         comments = Comment.objects.filter(comment_under=obj)
@@ -69,11 +69,11 @@ class SkimCommentSerializer(serializers.ModelSerializer):
     tmp_name = serializers.SerializerMethodField(method_name='get_tmp_name', read_only=True)
     avatar = serializers.SerializerMethodField(method_name='get_avatar', read_only=True)
 
-
     class Meta:
         model = Comment
         fields = ('id', 'tmp_name', 'avatar', 'comment_under', 'comment_time', 'reply_to', 'comment_url', 'delete_url',
-        'upvote_url', 'downvote_url', 'likes', 'hates', 'comment_content',  'comment_by', 'tmp_name', 'avatar')
+        'upvote_url', 'downvote_url', 'likes', 'hates', 'comment_content',  'comment_by', 'tmp_name',
+        'avatar')
 
     def get_avatar(self, obj):
         request = self.context['request']
@@ -385,7 +385,8 @@ class SkimBrowserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'open_url', 'posted_by', 'post_title', 'tag', 'likes','hates', 'watches', 'comments', 'browser_time')
+        fields = ('id', 'open_url', 'posted_by', 'post_title', 'tag', 'likes', 'hates', 'stars', 'watches',
+        'comments', 'browser_time')
 
     def get_comments(self, obj):
         comments = Comment.objects.filter(comment_under=obj)
