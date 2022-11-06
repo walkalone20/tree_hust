@@ -28,7 +28,7 @@ class CreatePostSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context.get('request')
         post = Post()
-        post.post_title = validated_data['post_title']
+        post.post_title = check(validated_data['post_title'])
         post.post_content = check(validated_data['post_content'])
         post.tag = validated_data['tag']
 
@@ -417,8 +417,8 @@ class CreateDraftSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context.get('request')
         draft = Draft()
-        draft.draft_title = validated_data['draft_title']
-        draft.draft_content = validated_data['draft_content']   
+        draft.draft_title = check(validated_data['draft_title'])
+        draft.draft_content = check(validated_data['draft_content'])   
         draft.tag = validated_data['tag']
 
         if request.user.is_authenticated:
