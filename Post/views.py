@@ -23,7 +23,7 @@ from .models import Post, Draft, Comment
 
 
 from .serializer import CreatePostSerializer, SkimPostSerializer, OpenPostSerializer
-from .serializer import SkimBrowserSerializer, CreateDraftSerializer
+from .serializer import CreateDraftSerializer
 from .serializer import SkimDraftSerializer, OpenDraftSerializer, UpdateDraftSerializer
 from .serializer import UpdatePostSerializer, UpvotePostSerializer, DownvotePostSerializer
 from .serializer import UpvoteCommentSerializer, DownvoteCommentSerializer, CreateCommentSerializer
@@ -111,12 +111,17 @@ class OpenPostView(generics.RetrieveAPIView):
         post = Post.objects.filter(id=pk).first()
 
         if self.request.user not in post.browser.all():
-            post.browser.add(self.request.user, through_defaults={"browser_time": timezone.now()})
+            post.browser.add(self.request.user)
             post.watches += 1
             post.save()
-        else:
-            post.browser.get(self.self.request.user)
-            post.browser.add(self.request.user, through_defaults={"browser_time": timezone.now()})
+
+        # if self.request.user not in post.browser.all():
+        #     post.browser.add(self.request.user, through_defaults={"browser_time": timezone.now()})
+        #     post.watches += 1
+        #     post.save()
+        # else:
+        #     post.browser.get(self.self.request.user)
+        #     post.browser.add(self.request.user, through_defaults={"browser_time": timezone.now()})
         return super().retrieve(request, *args, **kwargs)
     
     
