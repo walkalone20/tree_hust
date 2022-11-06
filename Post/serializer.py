@@ -247,6 +247,31 @@ class DownvotePostSerializer(serializers.ModelSerializer):
 
         return instance
 
+
+class CollectPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ('stars', )
+
+    def update(self, instance, validated_data):
+        request = self.context['request'] 
+        if not request.user.is_authenticated:
+            raise serializers.ValidationError({"message": "当前尚未登陆"})
+        
+        collection = instance.collection.all()
+        # vote = validated_data.pop('validated_data')
+
+        if request.user in collection:
+            instance.collection.remove(request.user)
+            instance.stars-=1
+        else:
+            instance.collection.add(request.user)
+            instance.stars+=1
+
+        instance.save()
+
+        return instance
+
 class SkimCollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post

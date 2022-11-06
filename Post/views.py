@@ -22,11 +22,11 @@ from .models import Post, Draft, Comment
 
 
 from .serializer import CreatePostSerializer, SkimPostSerializer, OpenPostSerializer
-from .serializer import SkimCollectionSerializer, SkimBrowserSerializer, CreateDraftSerializer
+from .serializer import SkimBrowserSerializer, CreateDraftSerializer
 from .serializer import SkimDraftSerializer, OpenDraftSerializer, UpdateDraftSerializer
 from .serializer import UpdatePostSerializer, UpvotePostSerializer, DownvotePostSerializer
 from .serializer import UpvoteCommentSerializer, DownvoteCommentSerializer, CreateCommentSerializer
-from .serializer import SkimCommentSerializer
+from .serializer import SkimCommentSerializer, CollectPostSerializer
 
 from .permissions import IsOwnerOrReadOnlyPermission
 
@@ -173,40 +173,75 @@ class DownvotePostView(generics.UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class BrowserListView(APIView):
-    serializer_class = SkimBrowserSerializer
+# class BrowserListView(APIView):
+#     serializer_class = SkimBrowserSerializer
 
-    @login_required
-    def get(self,request):
-        return Response(request.user.user_browser.all(), status=status.HTTP_200_OK)
+#     @login_required
+#     def get(self,request):
+#         return Response(request.user.user_browser.all(), status=status.HTTP_200_OK)
 
 
-class CollectionView(APIView):
-    bad_request_message = 'An error has occurred'
-    # TODO: 需要加两个get方法
+class CollectPostView(generics.UpdateAPIView):
+    """
+    收藏一个帖子
+    @url: /post/<int:pk>/collect
+    @method: put
+    @param: stars
+    @return: 当前用户收藏的所有帖子
+    """
+    queryset = Post.objects.all()
+    serializer_class = CollectPostSerializer
+    lookup_field = 'pk'
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class SkimCollectionView(generics.ListAPIView):
+    """
+    概览自己收藏的
+    @url: /post/collection
+    @method: get
+    @param: 
+    @return: 当前用户收藏的所有帖子
+    """
+    queryset = Post.objects.all()
+    serializer_class = SkimPostSerializer
+    model = Post
+
+    def get_queryset(self, *args, **kwargs):
+        request = self.request
+        qs = super().get_queryset()
+        collections = request.user.user_collection.all()
+        qs = qs.filter(id__in=collections)
+        return qs
+
+
+
+# class CollectionView(APIView):
+#     bad_request_message = 'An error has occurred'
     
-    @login_required
-    def post(self, request):
-        post = get_object_or_404(Post, slug=request.data.get('slug'))
-        if request.user not in post.favourite.all():
-            post.favourite.add(request.user)
-            return Response({'detail': 'User added to post'}, status=status.HTTP_200_OK)
-        return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
+#     @login_required
+#     def post(self, request):
+#         post = get_object_or_404(Post, slug=request.data.get('slug'))
+#         if request.user not in post.favourite.all():
+#             post.favourite.add(request.user)
+#             return Response({'detail': 'User added to post'}, status=status.HTTP_200_OK)
+#         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
 
-    @login_required
-    def delete(self, request):  # FIXME: delete 方法有问题
-        post = get_object_or_404(Post, slug=request.data.get('slug'))
-        if request.user in post.favourite.all():
-            post.favourite.remove(request.user)
-            return Response({'detail': 'User removed from post'}, status=status.HTTP_204_NO_CONTENT)
-        return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
+#     @login_required
+#     def delete(self, request):  # FIXME: delete 方法有问题
+#         post = get_object_or_404(Post, slug=request.data.get('slug'))
+#         if request.user in post.favourite.all():
+#             post.favourite.remove(request.user)
+#             return Response({'detail': 'User removed from post'}, status=status.HTTP_204_NO_CONTENT)
+#         return Response({'detail': self.bad_request_message}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CollectionListView(APIView):
-    serializer_class = SkimCollectionSerializer
+# class CollectionListView(APIView):
+#     serializer_class = SkimCollectionSerializer
 
-    def get(self,request):
-        return Response(request.user.user_favorite.all(), status=status.HTTP_200_OK)
+#     def get(self,request):
+#         return Response(request.user.user_favorite.all(), status=status.HTTP_200_OK)
 
 
 

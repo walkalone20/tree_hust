@@ -35,8 +35,8 @@ class Post(models.Model):
         related_name='upvote_post', blank=True)   # & upvote帖子
     downvote = models.ManyToManyField(User, verbose_name="downvote by some user", 
         related_name='downvote_post', blank=True)   # & downvote帖子
-    favorite = models.ManyToManyField(User, verbose_name="collected by some user", 
-        related_name='user_favorite', blank=True)  # & 收藏帖子
+    collection = models.ManyToManyField(User, verbose_name="collected by some user", 
+        related_name='user_collection', blank=True)  # & 收藏帖子
     browser = models.ManyToManyField(User, verbose_name="browsered by some user", 
         related_name='user_browser', blank=True)   # & 浏览记录
 
