@@ -66,7 +66,7 @@ class SkimPostView(generics.ListAPIView):
     model = Post
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_fields = ['tag']
-    ordering_fields = ['last_modified', 'likes', 'watches', 'stars', 'comments']
+    ordering_fields = ['last_modified', 'likes', 'watches', 'stars']
     ording = ['last_modified']
     search_fields = ['post_title', 'post_content']
     
@@ -295,7 +295,7 @@ class CreateCommentView(generics.CreateAPIView):
     发布一个评论
     @url: /post/<int:pk>/comment/<int:on>
     @method: post
-    @param: reply_to
+    @param: reply_to, comment_under
     @return: 
     """
     queryset = Comment.objects.all()
@@ -306,73 +306,70 @@ class CreateCommentView(generics.CreateAPIView):
     def perform_create(self, serializer):
         from rest_framework import serializers
         comment = Comment()
-        comment.comment_content = serializer.validated_data['comment_content']
 
-        comment_under = Post.objects.filter(id=self.kwargs.get('pk')).first()
+        comment_content = serializer.validated_data['comment_content']
+        comment.comment_content = comment_content
+
+        comment_under = serializer.validated_data['comment_under']
         comment.comment_under = comment_under
 
-
-        reply_to = Comment.objects.filter(id=self.kwargs.get('on')).first()
-        comment.reply_to = reply_to
+        pk = self.kwargs.get('pk')
+        if pk != 0:
+            reply_to = Comment.objects.filter(id=pk).first()
+            comment.reply_to = reply_to
+        else:
+            comment.reply_to = None
 
         if self.request.user.is_authenticated:
             comment.comment_by = self.request.user
             comment.save()
-            # 更新评论数
-            post = Post.objects.filter(id=comment_under.id).first()
-            post.comments += 1
-            post.save()
             return comment
         else:
             raise serializers.ValidationError({"detailed": "please login first!"})
 
 
-class DeleteCommentView(generics.DestroyAPIView): # TODO: 删除评论后评论数 comments 减一
+class DeleteCommentView(generics.DestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = SkimCommentSerializer
     # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
-    lookup_field = 'on'
+    lookup_field = 'pk'
 
     def get_queryset(self, *args, **kwargs):
-        qs = super().get_queryset()
+        qs = super().get_queryset(*args, **kwargs)
         request = self.request
         return qs.filter(comment_by=request.user)
     
     def perform_destroy(self, instance):
-        self.kwargs
         return super().perform_destroy(instance)
 
 
 class UpvoteCommentView(generics.UpdateAPIView):
     """
     upvote一个评论
-    @url: /post/<int:pk>/comment/<int:on>/upvote/
+    @url: /post/comment/<int:pk>/upvote/
     @method: put
     @param: likes
     @return: 
     """
     queryset = Comment.objects.all()
     serializer_class = UpvoteCommentSerializer
-    lookup_field = 'on'
+    lookup_field = 'pk'
     # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
-    
-    def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
 
 
 class DownvoteCommentView(generics.UpdateAPIView):
     """
     downvote一个评论
-    @url: /post/<int:pk>/comment/<int:on>/downvote/
+    @url: /post/comment/<int:pk>/downvote/
     @method: put
     @param: hates
     @return: 
     """
     queryset = Comment.objects.all()
     serializer_class = DownvoteCommentSerializer
-    lookup_field = 'on'
+    lookup_field = 'pk'
     # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 

@@ -49,21 +49,31 @@ class CreatePostSerializer(serializers.ModelSerializer):
 
 class SkimPostSerializer(serializers.ModelSerializer):
     open_url = serializers.HyperlinkedIdentityField(view_name='open-post', lookup_field='pk', read_only=True)
+    comments = serializers.SerializerMethodField(method_name='get_comments', read_only=True)
+
     class Meta:
         model = Post
         fields = ('id', 'open_url', 'posted_by', 'last_modified',
          'post_title', 'tag', 'likes', 'watches', 'comments')
 
+    def get_comments(self, obj):
+        comments = Comment.objects.filter(comment_under=obj)
+        return comments.count()
+
 
 class SkimCommentSerializer(serializers.ModelSerializer):
-    # comment_url = serializers.SerializerMethodField(method_name='get_comment_url', read_only=True)
-    # delete_url = serializers.SerializerMethodField(method_name='get_delete_url', read_only=True)
+    comment_url = serializers.SerializerMethodField(method_name='get_comment_url', read_only=True)
+    delete_url = serializers.SerializerMethodField(method_name='get_delete_url', read_only=True)
+    upvote_url = serializers.SerializerMethodField(method_name='get_upvote_url', read_only=True)
+    downvote_url = serializers.SerializerMethodField(method_name='get_downvote_url', read_only=True)
     tmp_name = serializers.SerializerMethodField(method_name='get_tmp_name', read_only=True)
     avatar = serializers.SerializerMethodField(method_name='get_avatar', read_only=True)
+
+
     class Meta:
         model = Comment
-        fields = ('id', 'tmp_name', 'avatar', 'comment_under', 'comment_time', 'reply_to', # 'comment_url', 'delete_url',
-        'likes', 'hates', 'comment_content',  'comment_by', 'tmp_name', 'avatar')
+        fields = ('id', 'tmp_name', 'avatar', 'comment_under', 'comment_time', 'reply_to', 'comment_url', 'delete_url',
+        'upvote_url', 'downvote_url', 'likes', 'hates', 'comment_content',  'comment_by', 'tmp_name', 'avatar')
 
     def get_avatar(self, obj):
         request = self.context['request']
@@ -82,7 +92,7 @@ class SkimCommentSerializer(serializers.ModelSerializer):
         if request is None:
             return None
         if request.user.is_authenticated:
-            return reverse('create-comment', kwargs={"pk": obj.pk, "on": request.kwargs.get('on')}, request=request)
+            return reverse('create-comment', kwargs={"pk": obj.pk}, request=request)
         return None
     
     def get_delete_url(self, obj):
@@ -90,8 +100,25 @@ class SkimCommentSerializer(serializers.ModelSerializer):
         if request is None:
             return None
         if request.user.is_authenticated and request.user == obj.comment_by:
-            return reverse('delete-comment', kwargs={"pk": obj.pk, "on": request.kwargs.get('on')}, request=request)
-        return None 
+            return reverse('delete-comment', kwargs={"pk": obj.pk}, request=request)
+        return None
+
+    def get_upvote_url(self, obj):
+        request = self.context['request']
+        if request is None:
+            return None
+        if request.user.is_authenticated:
+            return reverse('upvote-comment', kwargs={"pk": obj.pk}, request=request)
+        return None
+
+    def get_downvote_url(self, obj):
+        request = self.context['request']
+        if request is None:
+            return None
+        if request.user.is_authenticated:
+            return reverse('downvote-comment', kwargs={"pk": obj.pk}, request=request)
+        return None
+
 
 
 class OpenPostSerializer(serializers.ModelSerializer):
@@ -102,17 +129,24 @@ class OpenPostSerializer(serializers.ModelSerializer):
     upvote_url = serializers.SerializerMethodField(method_name='get_upvote_url', read_only=True)
     downvote_url = serializers.SerializerMethodField(method_name='get_downvote_url', read_only=True)
     collect_url = serializers.SerializerMethodField(method_name='get_collect_url', read_only=True)
+    comments = serializers.SerializerMethodField(method_name='get_comments', read_only=True)
+    
     has_upvoted = serializers.SerializerMethodField(method_name='get_has_upvoted', read_only=True)
     has_downvoted = serializers.SerializerMethodField(method_name='get_has_downvoted', read_only=True)
     has_collected = serializers.SerializerMethodField(method_name='get_has_collected', read_only=True)
     tmp_name = serializers.SerializerMethodField(method_name='get_tmp_name', read_only=True)
     avatar = serializers.SerializerMethodField(method_name='get_avatar', read_only=True)
-
+    
     class Meta:
         model = Post
         fields = ('id', 'tmp_name', 'avatar', 'update_url', 'delete_url', 'comment_url', 'upvote_url', 'downvote_url', 'collect_url', 
            'has_upvoted', 'has_downvoted', 'has_collected', 'posted_by', 'tmp_name','post_title', 'post_content', 
            'last_modified', 'likes', 'hates', 'watches', 'comments', 'stars', 'tag', 'post_comment')
+        # ! comment_url 需要前端加上当前post的id作为参数 -> comment_under
+    
+    def get_comments(self, obj):
+        comments = Comment.objects.filter(comment_under=obj)
+        return comments.count()
 
     def get_avatar(self, obj):
         request = self.context['request']
@@ -142,12 +176,12 @@ class OpenPostSerializer(serializers.ModelSerializer):
             return reverse('delete-post', kwargs={"pk": obj.pk}, request=request)
         return None
 
-    def get_comment_url(self, obj):  # TODO
+    def get_comment_url(self, obj): 
         request = self.context['request']
         if request == None:
             return None
         if request.user.is_authenticated:
-            return reverse('create-comment', kwargs={"pk": obj.pk, "on": 0}, request=request)
+            return reverse('create-comment', kwargs={"pk": 0}, request=request)
         return None
     
     def get_upvote_url(self, obj):
@@ -342,7 +376,7 @@ class CollectPostSerializer(serializers.ModelSerializer):
 class CreateCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ('comment_content', )
+        fields = ('comment_content', 'comment_under')
 
     def validate_comment_content(self, value):
         if not check(value):

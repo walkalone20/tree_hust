@@ -27,10 +27,10 @@ urlpatterns = [
     path('post/collection/', SkimCollectionView.as_view(), name='skim-collection'),
     
     # * comment implementation
-    path('post/<int:pk>/comment/<int:on>', CreateCommentView.as_view(), name='create-comment'),
-    path('post/<int:pk>/comment/<int:on>/delete', DeleteCommentView.as_view(), name='delete-comment'),
-    path('post/<int:pk>/comment/<int:on>/upvote', UpvoteCommentView.as_view(), name='upvote-comment'),
-    path('post/<int:pk>/comment/<int:on>/downvote', DownvoteCommentView.as_view(), name='downvote-comment'),
+    path('post/comment/<int:pk>/', CreateCommentView.as_view(), name='create-comment'),
+    path('post/comment/<int:pk>/delete', DeleteCommentView.as_view(), name='delete-comment'),
+    path('post/comment/<int:pk>/upvote', UpvoteCommentView.as_view(), name='upvote-comment'),
+    path('post/comment/<int:pk>/downvote', DownvoteCommentView.as_view(), name='downvote-comment'),
 
 
     # * draft implementation
