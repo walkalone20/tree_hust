@@ -173,6 +173,10 @@ class DownvotePostView(generics.UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 
+class SkimBrowserView(generics.ListAPIView):
+    pass
+
+
 # class BrowserListView(APIView):
 #     serializer_class = SkimBrowserSerializer
 

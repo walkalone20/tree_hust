@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import CreatePostView, SkimPostView, OpenPostView, DeletePostView, CollectPostView
 from .views import SkimCollectionView, CreateDraftView, DeleteDraftView, UpdateDraftView
-from .views import BrowserListView, OpenDraftView, UploadDraftView, SkimDraftView
+from .views import OpenDraftView, UploadDraftView, SkimDraftView, SkimBrowserView
 from .views import UpdatePostView, MyPostView, CreateCommentView, UpvotePostView, DownvotePostView
 from .views import DeleteCommentView, UpvoteCommentView, DownvoteCommentView
 
@@ -24,7 +24,7 @@ urlpatterns = [
     path('post/collection/', SkimCollectionView.as_view(), name='skim-collection'),
     
     # * post browser history
-    path('post/browser', BrowserListView.as_view()),
+    path('post/browser', SkimBrowserView.as_view()),
     
     # * comment implementation
     path('post/<int:pk>/comment/<int:on>', CreateCommentView.as_view(), name='create-comment'),

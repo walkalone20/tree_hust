@@ -85,8 +85,10 @@ class OpenPostSerializer(serializers.ModelSerializer):
     comment_url = serializers.SerializerMethodField(method_name='get_comment_url', read_only=True)
     upvote_url = serializers.SerializerMethodField(method_name='get_upvote_url', read_only=True)
     downvote_url = serializers.SerializerMethodField(method_name='get_downvote_url', read_only=True)
+    collect_url = serializers.SerializerMethodField(method_name='get_collect_url', read_only=True)
     has_upvoted = serializers.SerializerMethodField(method_name='get_has_upvoted', read_only=True)
-    has_downvoted = serializers.SerializerMethodField(method_name='get_has_downvoted', read_only=True)  
+    has_downvoted = serializers.SerializerMethodField(method_name='get_has_downvoted', read_only=True)
+    has_collected = serializers.SerializerMethodField(method_name='get_has_collected', read_only=True)  
 
     class Meta:
         model = Post
@@ -133,6 +135,14 @@ class OpenPostSerializer(serializers.ModelSerializer):
         if request.user.is_authenticated:
             return reverse('downvote-post', kwargs={"pk": obj.pk}, request=request)
         return None
+    
+    def get_collect_url(self, obj):
+        request = self.context['request']
+        if request == None:
+            return None
+        if request.user.is_authenticated:
+            return reverse('collect-post', kwargs={"pk": obj.pk}, request=request)
+        return None   
 
     def get_has_upvoted(self, obj):
         request = self.context['request']
@@ -156,6 +166,18 @@ class OpenPostSerializer(serializers.ModelSerializer):
         downvote = obj.downvote.all()
         if request.user in downvote:
             return True 
+        return False
+
+    def get_has_collected(self, obj):
+        request = self.context['request']
+        if request == None:
+            return None
+        if not request.user.is_authenticated:
+            return False
+
+        collection = obj.collection.all()
+        if request.user in collection:
+            return True
         return False
 
 
