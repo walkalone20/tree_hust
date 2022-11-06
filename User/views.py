@@ -18,6 +18,13 @@ import jwt
 
 
 class RegisterAPI(generics.GenericAPIView):
+    """
+    注册一个用户
+    @url: /register/
+    @method: post
+    @param: email,username,password,password2
+    @return: (response,email,username)
+    """
     serializer_class = RegistrationSerializer
 
     def post(self, request):
@@ -45,6 +52,13 @@ class RegisterAPI(generics.GenericAPIView):
         return Response(user_data)
 
 class VerifyEmail(generics.GenericAPIView):
+    """
+    验证一个邮箱
+    @url: /verify_email/
+    @method: post
+    @param: token
+    @return: (response)
+    """
     def get(self,request):
         token=request.GET.get('token')
         try:
@@ -60,6 +74,13 @@ class VerifyEmail(generics.GenericAPIView):
             return Response({'error':'Invalid token!'},status=status.HTTP_400_BAD_REQUEST)
 
 class CustomAuthTokenAPI(ObtainAuthToken):
+    """
+    登陆用户
+    @url: /login/
+    @method: post
+    @param: email,password
+    @return: (token,user_id,username,email)
+    """
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
@@ -90,20 +111,41 @@ class CustomAuthTokenAPI(ObtainAuthToken):
 
 
 class LogoutAPI(generics.GenericAPIView):
+    """
+    登出用户
+    @url: /logout/
+    @method: get
+    @param: token
+    @return: (response)
+    """
     authentication_classes = [TokenAuthentication]
     permission_classes=[IsAuthenticated,]
-    def get(request):
+    def get(self,request):
         request.user.auth_token.delete()
         logout(request)
         return Response('User Logged out successfully')
 
 class ChangePasswordAPI(generics.UpdateAPIView):
+    """
+    更改密码
+    @url: /change_password/<int:pk>/
+    @method: put
+    @param: old_password, password, password2
+    @return: 根本没得返回消息
+    """
     serializer_class = ChangePasswordSerializer
     queryset = User.objects.all()
     permission_classes = (IsAuthenticated,)
     serializer_class = ChangePasswordSerializer
 
 class UpdateProfileAPI(generics.UpdateAPIView):
+    """
+    更改个人信息
+    @url: /update_profile/<int:pk>/
+    @method: put
+    @param: username, email, aboutme(可选)
+    @return: (username, email, aboutme(可选))
+    """
     serializer_class = UpdateUserSerializer
     queryset = User.objects.all()
     permission_classes = (IsAuthenticated,)
