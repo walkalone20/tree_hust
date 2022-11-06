@@ -72,4 +72,5 @@ def check(content):
     with open("static\stopwords.txt","r",encoding="utf-8") as fp:
         for k in fp.read().split(","):
             f.add(k)
+            print(k)
     return f.filter(content)
