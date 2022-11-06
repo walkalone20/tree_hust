@@ -22,8 +22,8 @@ class RegisterAPI(generics.GenericAPIView):
     注册一个用户
     @url: /register/
     @method: post
-    @param: email,username,password,password2
-    @return: (response,email,username)
+    @param: email, username, password, password2
+    @return: (response, email, username)
     """
     serializer_class = RegistrationSerializer
 
@@ -78,8 +78,8 @@ class CustomAuthTokenAPI(ObtainAuthToken):
     登陆用户
     @url: /login/
     @method: post
-    @param: email,password
-    @return: (token,user_id,username,email)
+    @param: email, password
+    @return: (token, user_id, username, email)
     """
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
