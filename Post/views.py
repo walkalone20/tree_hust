@@ -111,12 +111,17 @@ class OpenPostView(generics.RetrieveAPIView):
         post = Post.objects.filter(id=pk).first()
 
         if self.request.user not in post.browser.all():
-            post.browser.add(self.request.user, through_defaults={"browser_time": timezone.now()})
+            post.browser.add(self.request.user)
             post.watches += 1
             post.save()
-        else:
-            post.browser.get(self.self.request.user)
-            post.browser.add(self.request.user, through_defaults={"browser_time": timezone.now()})
+
+        # if self.request.user not in post.browser.all():
+        #     post.browser.add(self.request.user, through_defaults={"browser_time": timezone.now()})
+        #     post.watches += 1
+        #     post.save()
+        # else:
+        #     post.browser.get(self.self.request.user)
+        #     post.browser.add(self.request.user, through_defaults={"browser_time": timezone.now()})
         return super().retrieve(request, *args, **kwargs)
     
     
