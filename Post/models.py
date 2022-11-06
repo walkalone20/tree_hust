@@ -34,21 +34,21 @@ class Post(models.Model):
         related_name='upvote_post', blank=True)   # & upvote帖子
     downvote = models.ManyToManyField(User, verbose_name="downvote by some user", 
         related_name='downvote_post', blank=True)   # & downvote帖子
-    collection = models.ManyToManyField(User, verbose_name="collected by some user", # through='collection_time',
+    collection = models.ManyToManyField(User, verbose_name="collected by some user", through='collection_time',
         related_name='user_collection', blank=True)  # & 收藏帖子
-    browser = models.ManyToManyField(User, verbose_name="browsered by some user", # through='browser_history',
+    browser = models.ManyToManyField(User, verbose_name="browsered by some user", through='browser_history',
         related_name='user_browser', blank=True)   # & 浏览记录
 
 
 class browser_history(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    browser_time = models.DateTimeField()
+    browser_time = models.DateTimeField(auto_now=True)
 
 class collection_time(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    star_time = models.DateTimeField()
+    star_time = models.DateTimeField(auto_now=True)
 
 
 class Draft(models.Model):

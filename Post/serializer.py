@@ -358,17 +358,43 @@ class CollectPostSerializer(serializers.ModelSerializer):
 
         return instance
 
-# class SkimCollectionSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Post
-#         fields = ('id', 'posted_by', 'tmp_name', 'last_modified', 'post_title', 'tag', 'likes', 'watches', 'comments')
+class SkimCollectionSerializer(serializers.ModelSerializer):
+    comments = serializers.SerializerMethodField(method_name='get_comments', read_only=True)
+    open_url = serializers.HyperlinkedIdentityField(view_name='open-post', lookup_field='pk', read_only=True)
+    star_time = serializers.SerializerMethodField(method_name='get_star_time', read_only=True)
+
+    class Meta:
+        model = Post
+        fields = ('id', 'open_url', 'posted_by', 'post_title', 'tag', 'likes','hates', 'watches', 'comments', 'star_time')
+
+    def get_comments(self, obj):
+        comments = Comment.objects.filter(comment_under=obj)
+        return comments.count()
+    
+    def get_star_time(self,obj):
+        request=self.context['request']
+        user = obj.collection_time_set.filter(user=request.user).first()
+        return user.star_time
 
 
-# class SkimBrowserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Post
-#         fields = ('id', 'posted_by', 'tmp_name', 'last_modified', 'post_title', 'tag', 'likes', 'watches', 'comments')
 
+class SkimBrowserSerializer(serializers.ModelSerializer):
+    comments = serializers.SerializerMethodField(method_name='get_comments', read_only=True)
+    open_url = serializers.HyperlinkedIdentityField(view_name='open-post', lookup_field='pk', read_only=True)
+    browser_time = serializers.SerializerMethodField(method_name='get_browser_time', read_only=True)
+
+    class Meta:
+        model = Post
+        fields = ('id', 'open_url', 'posted_by', 'post_title', 'tag', 'likes','hates', 'watches', 'comments', 'browser_time')
+
+    def get_comments(self, obj):
+        comments = Comment.objects.filter(comment_under=obj)
+        return comments.count()
+    
+    def get_browser_time(self,obj):
+        request=self.context['request']
+        user = obj.browser_history_set.filter(user=request.user).first()
+        return user.browser_time
 
 
 

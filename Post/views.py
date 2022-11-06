@@ -23,7 +23,7 @@ from .models import Post, Draft, Comment
 
 
 from .serializer import CreatePostSerializer, SkimPostSerializer, OpenPostSerializer
-from .serializer import CreateDraftSerializer
+from .serializer import CreateDraftSerializer, SkimCollectionSerializer, SkimBrowserSerializer
 from .serializer import SkimDraftSerializer, OpenDraftSerializer, UpdateDraftSerializer
 from .serializer import UpdatePostSerializer, UpvotePostSerializer, DownvotePostSerializer
 from .serializer import UpvoteCommentSerializer, DownvoteCommentSerializer, CreateCommentSerializer
@@ -201,7 +201,7 @@ class SkimBrowserView(generics.ListAPIView):
     @return: 当前用户浏览的所有帖子
     """
     queryset = Post.objects.all()
-    serializer_class = SkimPostSerializer
+    serializer_class = SkimBrowserSerializer
     model = Post
     # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
@@ -246,7 +246,7 @@ class SkimCollectionView(generics.ListAPIView):
     @return: 当前用户收藏的所有帖子
     """
     queryset = Post.objects.all()
-    serializer_class = SkimPostSerializer
+    serializer_class = SkimCollectionSerializer
     model = Post
     # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
@@ -256,6 +256,7 @@ class SkimCollectionView(generics.ListAPIView):
         qs = super().get_queryset(*args, **kwargs)
         collections = request.user.user_collection.all()    # FIXME: all?
         qs = qs.filter(id__in=collections)
+
         return qs
 
 
