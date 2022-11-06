@@ -9,3 +9,11 @@ def generate_random_name(post_id, user_id):
         return generate_name_animal(post_id, user_id)
     else:
         return generate_name_food(post_id, user_id)
+
+
+if __name__ == 'main':
+    print(generate_random_name(1, 10))
+    print(generate_random_name(1, 10))
+    print(generate_random_name(1, 10))
+    print(generate_random_name(1, 10))
+    print(generate_random_name(1, 10))
