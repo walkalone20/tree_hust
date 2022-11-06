@@ -51,29 +51,31 @@ class SkimPostSerializer(serializers.ModelSerializer):
     open_url = serializers.HyperlinkedIdentityField(view_name='open-post', lookup_field='pk', read_only=True)
     class Meta:
         model = Post
-        fields = ('id', 'open_url', 'posted_by', 'tmp_name', 'last_modified',
+        fields = ('id', 'open_url', 'posted_by', 'last_modified',
          'post_title', 'tag', 'likes', 'watches', 'comments')
 
 
 class SkimCommentSerializer(serializers.ModelSerializer):
     # comment_url = serializers.SerializerMethodField(method_name='get_comment_url', read_only=True)
     # delete_url = serializers.SerializerMethodField(method_name='get_delete_url', read_only=True)
+    tmp_name = serializers.SerializerMethodField(method_name='get_tmp_name', read_only=True)
+    avatar = serializers.SerializerMethodField(method_name='get_avatar', read_only=True)
     class Meta:
         model = Comment
-        fields = ('id', 'comment_under', 'comment_time', 'reply_to', # 'comment_url', 'delete_url',
+        fields = ('id', 'tmp_name', 'avatar', 'comment_under', 'comment_time', 'reply_to', # 'comment_url', 'delete_url',
         'likes', 'hates', 'comment_content',  'comment_by', 'tmp_name', 'avatar')
 
     def get_avatar(self, obj):
         request = self.context['request']
         if request is None:
             return None
-        return generate_random_avatar(obj.id,obj.comment_by)
+        return generate_random_avatar(obj.id, obj.comment_by.id)
     
     def get_tmp_name(self, obj):
         request = self.context['request']
         if request is None:
             return None
-        return generate_random_name(obj.id,obj.comment_by)
+        return generate_random_name(obj.id, obj.comment_by.id)
 
     def get_comment_url(self, obj):
         request = self.context['request']
@@ -102,7 +104,9 @@ class OpenPostSerializer(serializers.ModelSerializer):
     collect_url = serializers.SerializerMethodField(method_name='get_collect_url', read_only=True)
     has_upvoted = serializers.SerializerMethodField(method_name='get_has_upvoted', read_only=True)
     has_downvoted = serializers.SerializerMethodField(method_name='get_has_downvoted', read_only=True)
-    has_collected = serializers.SerializerMethodField(method_name='get_has_collected', read_only=True)  
+    has_collected = serializers.SerializerMethodField(method_name='get_has_collected', read_only=True)
+    tmp_name = serializers.SerializerMethodField(method_name='get_tmp_name', read_only=True)
+    avatar = serializers.SerializerMethodField(method_name='get_avatar', read_only=True)
 
     class Meta:
         model = Post
@@ -114,13 +118,13 @@ class OpenPostSerializer(serializers.ModelSerializer):
         request = self.context['request']
         if request is None:
             return None
-        return generate_random_avatar(obj.id,obj.comment_by)
+        return generate_random_avatar(obj.id, obj.posted_by.id)
     
     def get_tmp_name(self, obj):
         request = self.context['request']
         if request is None:
             return None
-        return generate_random_name(obj.id,obj.posted_by)
+        return generate_random_name(obj.id, obj.posted_by.id)
 
     def get_update_url(self, obj):
         request = self.context['request']
