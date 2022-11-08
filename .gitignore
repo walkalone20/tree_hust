@@ -8,6 +8,8 @@ website/.pnp
 # testing
 website/coverage
 
+website/.storybook
+
 # production
 website/build
 
