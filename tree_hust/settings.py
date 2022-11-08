@@ -158,7 +158,7 @@ REST_FRAMEWORK = {
 # EMAIL_HOST_PASSWORD = 'yourpassword'  
 # EMAIL_PORT = 587  
 
-# PASSWORD_RESET_TIMEOUT=14400
+# 
 
 # qq POP3/SMTP 配置
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -171,3 +171,5 @@ EMAIL_HOST_PASSWORD = 'cqtivvygalesbdab'
 EMAIL_USE_TLS = True  # 这里必须是 True，否则发送不成功
 #收件人看到的发件人
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+PASSWORD_RESET_TIMEOUT=7200
