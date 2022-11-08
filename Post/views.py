@@ -293,7 +293,7 @@ class CreateCommentView(generics.CreateAPIView):
     """
     queryset = Comment.objects.all()
     serializer_class = CreateCommentSerializer
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
@@ -387,7 +387,7 @@ class CreateDraftView(generics.CreateAPIView):
     """
     queryset = Draft.objects.all()
     serializer_class = CreateDraftSerializer
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
@@ -427,7 +427,7 @@ class SkimDraftView(generics.ListAPIView):
     model = Draft
     queryset = Draft.objects.all()
     serializer_class = SkimDraftSerializer
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self, *args, **kwargs):
