@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
                 (
                     "aboutme",
                     models.CharField(
-                        default="This twat nigga decides to say nothing about himself, a fat ass made goofy son of a bitch.",
+                        default="nothing.",
                         max_length=150,
                     ),
                 ),

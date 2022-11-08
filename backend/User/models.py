@@ -34,7 +34,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser,PermissionsMixin):
     email = models.EmailField(unique=True,verbose_name='email')
     username=models.CharField(max_length=30,unique=True)
-    aboutme=models.CharField(max_length=150,default="This twat nigga decides to say nothing about himself, a fat ass made goofy son of a bitch.")
+    aboutme=models.CharField(max_length=150,default="这个用户啥也没说...")
     date_joined=models.DateTimeField(verbose_name='date joined',auto_now_add=True)
     last_login=models.DateTimeField(verbose_name='date joined',auto_now=True)
     is_verified=models.BooleanField(default=False)

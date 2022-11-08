@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '*']
 
 
 # Application definition
@@ -90,17 +90,17 @@ DATABASES = {
     }
 }
 
-# ^ use mysql instead of sqlite
-# DATABASES = {
-#     'default':
-#     {
+
+# DATABASES = { 
+#     'default': 
+#     { 
 #         'ENGINE': 'django.db.backends.mysql',    # 数据库引擎
-#         'NAME': 'tree_hust', # 数据库名称
+#         'NAME': 'treehust', # 数据库名称
 #         'HOST': '127.0.0.1', # 数据库地址，本机 ip 地址 127.0.0.1
 #         'PORT': 3306, # 端口
 #         'USER': 'root',  # 数据库用户名
-#         'PASSWORD': 'AnyuElin10', # 数据库密码
-#     }
+#         'PASSWORD': '123456', # 数据库密码
+#     }  
 # }
 
 # Password validation
@@ -158,7 +158,7 @@ REST_FRAMEWORK = {
 # EMAIL_HOST_PASSWORD = 'yourpassword'  
 # EMAIL_PORT = 587  
 
-# PASSWORD_RESET_TIMEOUT=14400
+# 
 
 # qq POP3/SMTP 配置
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -171,3 +171,5 @@ EMAIL_HOST_PASSWORD = 'cqtivvygalesbdab'
 EMAIL_USE_TLS = True  # 这里必须是 True，否则发送不成功
 #收件人看到的发件人
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+PASSWORD_RESET_TIMEOUT=7200
