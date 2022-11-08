@@ -16,7 +16,7 @@ urlpatterns = [
     path('post/<int:pk>/update/', UpdatePostView.as_view(), name='update-post'),
     
     # * post browser history
-    path('post/browser', SkimBrowserView.as_view()),
+    path('post/browser/', SkimBrowserView.as_view()),
 
     # * upvote and downvote on post
     path('post/<int:pk>/upvote/', UpvotePostView.as_view(), name='upvote-post'),
