@@ -1,0 +1,54 @@
+"filename", "language", "JavaScript", "CSS", "JavaScript React", "XML", "comment", "blank", "total"
+"e:\LIBRARY\software_project\website-demo\src\App.js", "JavaScript", 118, 0, 0, 0, 10, 20, 148
+"e:\LIBRARY\software_project\website-demo\src\Home.js", "JavaScript", 57, 0, 0, 0, 6, 7, 70
+"e:\LIBRARY\software_project\website-demo\src\PostPage.js", "JavaScript", 107, 0, 0, 0, 5, 14, 126
+"e:\LIBRARY\software_project\website-demo\src\components\BackTitle.css", "CSS", 0, 3, 0, 0, 0, 0, 3
+"e:\LIBRARY\software_project\website-demo\src\components\CheckoutButton.js", "JavaScript", 0, 0, 0, 0, 0, 1, 1
+"e:\LIBRARY\software_project\website-demo\src\components\CommentPost.js", "JavaScript", 88, 0, 0, 0, 21, 8, 117
+"e:\LIBRARY\software_project\website-demo\src\components\CommentSideBar.css", "CSS", 0, 5, 0, 0, 0, 0, 5
+"e:\LIBRARY\software_project\website-demo\src\components\CommentSideBar.js", "JavaScript", 14, 0, 0, 0, 0, 1, 15
+"e:\LIBRARY\software_project\website-demo\src\components\DraftBox.js", "JavaScript", 26, 0, 0, 0, 0, 2, 28
+"e:\LIBRARY\software_project\website-demo\src\components\DraftPost.js", "JavaScript", 22, 0, 0, 0, 0, 2, 24
+"e:\LIBRARY\software_project\website-demo\src\components\DropDraft.css", "CSS", 0, 3, 0, 0, 0, 0, 3
+"e:\LIBRARY\software_project\website-demo\src\components\Header.js", "JavaScript", 97, 0, 0, 0, 7, 8, 112
+"e:\LIBRARY\software_project\website-demo\src\components\HomePageComposer.js", "JavaScript", 137, 0, 0, 0, 10, 10, 157
+"e:\LIBRARY\software_project\website-demo\src\components\Intro.js", "JavaScript", 11, 0, 0, 0, 12, 2, 25
+"e:\LIBRARY\software_project\website-demo\src\components\ItemListBar.js", "JavaScript", 19, 0, 0, 0, 0, 1, 20
+"e:\LIBRARY\software_project\website-demo\src\components\LoginButton.js", "JavaScript", 68, 0, 0, 0, 0, 7, 75
+"e:\LIBRARY\software_project\website-demo\src\components\LoginModal.css", "CSS", 0, 0, 0, 0, 0, 1, 1
+"e:\LIBRARY\software_project\website-demo\src\components\LoginModal.js", "JavaScript", 198, 0, 0, 0, 2, 17, 217
+"e:\LIBRARY\software_project\website-demo\src\components\NotificationBox.js", "JavaScript", 31, 0, 0, 0, 0, 4, 35
+"e:\LIBRARY\software_project\website-demo\src\components\NotificationButton.js", "JavaScript", 0, 0, 0, 0, 0, 1, 1
+"e:\LIBRARY\software_project\website-demo\src\components\NotificationPost.js", "JavaScript", 28, 0, 0, 0, 0, 3, 31
+"e:\LIBRARY\software_project\website-demo\src\components\Post.js", "JavaScript", 30, 0, 0, 0, 12, 4, 46
+"e:\LIBRARY\software_project\website-demo\src\components\PostButton.js", "JavaScript", 10, 0, 0, 0, 12, 1, 23
+"e:\LIBRARY\software_project\website-demo\src\components\PostComposerTitleInput.css", "CSS", 0, 3, 0, 0, 0, 0, 3
+"e:\LIBRARY\software_project\website-demo\src\components\PostPageComposer.js", "JavaScript", 131, 0, 0, 0, 6, 8, 145
+"e:\LIBRARY\software_project\website-demo\src\components\ReplyButton.js", "JavaScript", 10, 0, 0, 0, 1, 1, 12
+"e:\LIBRARY\software_project\website-demo\src\components\SearchInput.css", "CSS", 0, 41, 0, 0, 0, 0, 41
+"e:\LIBRARY\software_project\website-demo\src\components\SearchInput.js", "JavaScript", 50, 0, 0, 0, 7, 5, 62
+"e:\LIBRARY\software_project\website-demo\src\components\SectionAnchor.js", "JavaScript", 0, 0, 0, 0, 0, 1, 1
+"e:\LIBRARY\software_project\website-demo\src\components\SideNav.js", "JavaScript", 14, 0, 0, 0, 7, 5, 26
+"e:\LIBRARY\software_project\website-demo\src\components\SubscribeButton.js", "JavaScript", 10, 0, 0, 0, 8, 1, 19
+"e:\LIBRARY\software_project\website-demo\src\components\Welcome.js", "JavaScript", 1, 0, 0, 0, 0, 2, 3
+"e:\LIBRARY\software_project\website-demo\src\index.js", "JavaScript", 12, 0, 0, 0, 10, 4, 26
+"e:\LIBRARY\software_project\website-demo\src\reportWebVitals.js", "JavaScript", 12, 0, 0, 0, 0, 2, 14
+"e:\LIBRARY\software_project\website-demo\src\setupTests.js", "JavaScript", 1, 0, 0, 0, 4, 1, 6
+"e:\LIBRARY\software_project\website-demo\src\stories\Button.jsx", "JavaScript React", 0, 0, 29, 0, 18, 4, 51
+"e:\LIBRARY\software_project\website-demo\src\stories\Button.stories.jsx", "JavaScript React", 0, 0, 29, 0, 4, 8, 41
+"e:\LIBRARY\software_project\website-demo\src\stories\Header.jsx", "JavaScript React", 0, 0, 53, 0, 0, 5, 58
+"e:\LIBRARY\software_project\website-demo\src\stories\Header.stories.jsx", "JavaScript React", 0, 0, 18, 0, 1, 6, 25
+"e:\LIBRARY\software_project\website-demo\src\stories\Page.jsx", "JavaScript React", 0, 0, 65, 0, 0, 5, 70
+"e:\LIBRARY\software_project\website-demo\src\stories\Page.stories.jsx", "JavaScript React", 0, 0, 18, 0, 2, 6, 26
+"e:\LIBRARY\software_project\website-demo\src\stories\assets\code-brackets.svg", "XML", 0, 0, 0, 1, 0, 0, 1
+"e:\LIBRARY\software_project\website-demo\src\stories\assets\colors.svg", "XML", 0, 0, 0, 1, 0, 0, 1
+"e:\LIBRARY\software_project\website-demo\src\stories\assets\comments.svg", "XML", 0, 0, 0, 1, 0, 0, 1
+"e:\LIBRARY\software_project\website-demo\src\stories\assets\direction.svg", "XML", 0, 0, 0, 1, 0, 0, 1
+"e:\LIBRARY\software_project\website-demo\src\stories\assets\flow.svg", "XML", 0, 0, 0, 1, 0, 0, 1
+"e:\LIBRARY\software_project\website-demo\src\stories\assets\plugin.svg", "XML", 0, 0, 0, 1, 0, 0, 1
+"e:\LIBRARY\software_project\website-demo\src\stories\assets\repo.svg", "XML", 0, 0, 0, 1, 0, 0, 1
+"e:\LIBRARY\software_project\website-demo\src\stories\assets\stackalt.svg", "XML", 0, 0, 0, 1, 0, 0, 1
+"e:\LIBRARY\software_project\website-demo\src\stories\button.css", "CSS", 0, 30, 0, 0, 0, 1, 31
+"e:\LIBRARY\software_project\website-demo\src\stories\header.css", "CSS", 0, 28, 0, 0, 0, 5, 33
+"e:\LIBRARY\software_project\website-demo\src\stories\page.css", "CSS", 0, 60, 0, 0, 0, 10, 70
+"Total", "-", 1302, 173, 212, 8, 165, 194, 2054

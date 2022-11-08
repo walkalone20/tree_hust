@@ -1,0 +1,82 @@
+Date : 2022-11-08 17:30:32
+Directory : e:\LIBRARY\software_project\website-demo\src
+Total : 52 files,  1708 codes, 175 comments, 198 blanks, all 2081 lines
+
+Languages
++------------------+------------+------------+------------+------------+------------+
+| language         | files      | code       | comment    | blank      | total      |
++------------------+------------+------------+------------+------------+------------+
+| JavaScript       |         29 |      1,315 |        150 |        147 |      1,612 |
+| JavaScript React |          6 |        212 |         25 |         34 |        271 |
+| CSS              |          9 |        173 |          0 |         17 |        190 |
+| XML              |          8 |          8 |          0 |          0 |          8 |
++------------------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                               | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                  |         52 |      1,708 |        175 |        198 |      2,081 |
+| components                                                                         |         29 |      1,063 |        113 |        100 |      1,276 |
+| stories                                                                            |         17 |        338 |         25 |         50 |        413 |
+| stories\assets                                                                     |          8 |          8 |          0 |          0 |          8 |
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| filename                                                                           | language         | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| e:\LIBRARY\software_project\website-demo\src\App.js                                | JavaScript       |        118 |         12 |         20 |        150 |
+| e:\LIBRARY\software_project\website-demo\src\Home.js                               | JavaScript       |         57 |          6 |          7 |         70 |
+| e:\LIBRARY\software_project\website-demo\src\PostPage.js                           | JavaScript       |        107 |          5 |         14 |        126 |
+| e:\LIBRARY\software_project\website-demo\src\components\BackTitle.css              | CSS              |          3 |          0 |          0 |          3 |
+| e:\LIBRARY\software_project\website-demo\src\components\CheckoutButton.js          | JavaScript       |          0 |          0 |          1 |          1 |
+| e:\LIBRARY\software_project\website-demo\src\components\CommentPost.js             | JavaScript       |         88 |         21 |          8 |        117 |
+| e:\LIBRARY\software_project\website-demo\src\components\CommentSideBar.css         | CSS              |          5 |          0 |          0 |          5 |
+| e:\LIBRARY\software_project\website-demo\src\components\CommentSideBar.js          | JavaScript       |         14 |          0 |          1 |         15 |
+| e:\LIBRARY\software_project\website-demo\src\components\DraftBox.js                | JavaScript       |         26 |          0 |          2 |         28 |
+| e:\LIBRARY\software_project\website-demo\src\components\DraftPost.js               | JavaScript       |         44 |          0 |          5 |         49 |
+| e:\LIBRARY\software_project\website-demo\src\components\DropDraft.css              | CSS              |          3 |          0 |          0 |          3 |
+| e:\LIBRARY\software_project\website-demo\src\components\Header.js                  | JavaScript       |         88 |         15 |          9 |        112 |
+| e:\LIBRARY\software_project\website-demo\src\components\HomePageComposer.js        | JavaScript       |        137 |         10 |         10 |        157 |
+| e:\LIBRARY\software_project\website-demo\src\components\Intro.js                   | JavaScript       |         11 |         12 |          2 |         25 |
+| e:\LIBRARY\software_project\website-demo\src\components\ItemListBar.js             | JavaScript       |         19 |          0 |          1 |         20 |
+| e:\LIBRARY\software_project\website-demo\src\components\LoginButton.js             | JavaScript       |         68 |          0 |          7 |         75 |
+| e:\LIBRARY\software_project\website-demo\src\components\LoginModal.css             | CSS              |          0 |          0 |          1 |          1 |
+| e:\LIBRARY\software_project\website-demo\src\components\LoginModal.js              | JavaScript       |        198 |          2 |         17 |        217 |
+| e:\LIBRARY\software_project\website-demo\src\components\NotificationBox.js         | JavaScript       |         31 |          0 |          4 |         35 |
+| e:\LIBRARY\software_project\website-demo\src\components\NotificationButton.js      | JavaScript       |          0 |          0 |          1 |          1 |
+| e:\LIBRARY\software_project\website-demo\src\components\NotificationPost.js        | JavaScript       |         28 |          0 |          3 |         31 |
+| e:\LIBRARY\software_project\website-demo\src\components\Post.js                    | JavaScript       |         30 |         12 |          4 |         46 |
+| e:\LIBRARY\software_project\website-demo\src\components\PostButton.js              | JavaScript       |         10 |         12 |          1 |         23 |
+| e:\LIBRARY\software_project\website-demo\src\components\PostComposerTitleInput.css | CSS              |          3 |          0 |          0 |          3 |
+| e:\LIBRARY\software_project\website-demo\src\components\PostPageComposer.js        | JavaScript       |        131 |          6 |          8 |        145 |
+| e:\LIBRARY\software_project\website-demo\src\components\ReplyButton.js             | JavaScript       |         10 |          1 |          1 |         12 |
+| e:\LIBRARY\software_project\website-demo\src\components\SearchInput.css            | CSS              |         41 |          0 |          0 |         41 |
+| e:\LIBRARY\software_project\website-demo\src\components\SearchInput.js             | JavaScript       |         50 |          7 |          5 |         62 |
+| e:\LIBRARY\software_project\website-demo\src\components\SectionAnchor.js           | JavaScript       |          0 |          0 |          1 |          1 |
+| e:\LIBRARY\software_project\website-demo\src\components\SideNav.js                 | JavaScript       |         14 |          7 |          5 |         26 |
+| e:\LIBRARY\software_project\website-demo\src\components\SubscribeButton.js         | JavaScript       |         10 |          8 |          1 |         19 |
+| e:\LIBRARY\software_project\website-demo\src\components\Welcome.js                 | JavaScript       |          1 |          0 |          2 |          3 |
+| e:\LIBRARY\software_project\website-demo\src\index.js                              | JavaScript       |         12 |         10 |          4 |         26 |
+| e:\LIBRARY\software_project\website-demo\src\reportWebVitals.js                    | JavaScript       |         12 |          0 |          2 |         14 |
+| e:\LIBRARY\software_project\website-demo\src\setupTests.js                         | JavaScript       |          1 |          4 |          1 |          6 |
+| e:\LIBRARY\software_project\website-demo\src\stories\Button.jsx                    | JavaScript React |         29 |         18 |          4 |         51 |
+| e:\LIBRARY\software_project\website-demo\src\stories\Button.stories.jsx            | JavaScript React |         29 |          4 |          8 |         41 |
+| e:\LIBRARY\software_project\website-demo\src\stories\Header.jsx                    | JavaScript React |         53 |          0 |          5 |         58 |
+| e:\LIBRARY\software_project\website-demo\src\stories\Header.stories.jsx            | JavaScript React |         18 |          1 |          6 |         25 |
+| e:\LIBRARY\software_project\website-demo\src\stories\Page.jsx                      | JavaScript React |         65 |          0 |          5 |         70 |
+| e:\LIBRARY\software_project\website-demo\src\stories\Page.stories.jsx              | JavaScript React |         18 |          2 |          6 |         26 |
+| e:\LIBRARY\software_project\website-demo\src\stories\assets\code-brackets.svg      | XML              |          1 |          0 |          0 |          1 |
+| e:\LIBRARY\software_project\website-demo\src\stories\assets\colors.svg             | XML              |          1 |          0 |          0 |          1 |
+| e:\LIBRARY\software_project\website-demo\src\stories\assets\comments.svg           | XML              |          1 |          0 |          0 |          1 |
+| e:\LIBRARY\software_project\website-demo\src\stories\assets\direction.svg          | XML              |          1 |          0 |          0 |          1 |
+| e:\LIBRARY\software_project\website-demo\src\stories\assets\flow.svg               | XML              |          1 |          0 |          0 |          1 |
+| e:\LIBRARY\software_project\website-demo\src\stories\assets\plugin.svg             | XML              |          1 |          0 |          0 |          1 |
+| e:\LIBRARY\software_project\website-demo\src\stories\assets\repo.svg               | XML              |          1 |          0 |          0 |          1 |
+| e:\LIBRARY\software_project\website-demo\src\stories\assets\stackalt.svg           | XML              |          1 |          0 |          0 |          1 |
+| e:\LIBRARY\software_project\website-demo\src\stories\button.css                    | CSS              |         30 |          0 |          1 |         31 |
+| e:\LIBRARY\software_project\website-demo\src\stories\header.css                    | CSS              |         28 |          0 |          5 |         33 |
+| e:\LIBRARY\software_project\website-demo\src\stories\page.css                      | CSS              |         60 |          0 |         10 |         70 |
+| Total                                                                              |                  |      1,708 |        175 |        198 |      2,081 |
++------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
