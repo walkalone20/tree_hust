@@ -9,7 +9,7 @@ from .views import DeleteCommentView, UpvoteCommentView, DownvoteCommentView
 urlpatterns = [
     # * CRUD on post
     path('post/', SkimPostView.as_view(), name='skim-post'),
-    path('post/my', MyPostView.as_view(), name='my-post'),
+    path('post/my/', MyPostView.as_view(), name='my-post'),
     path('post/create/', CreatePostView.as_view(), name='create-post'),
     path('post/<int:pk>/delete/', DeletePostView.as_view(), name='delete-post'),
     path('post/<int:pk>/', OpenPostView.as_view(), name='open-post'),
@@ -28,9 +28,9 @@ urlpatterns = [
     
     # * comment implementation
     path('post/comment/<int:pk>/', CreateCommentView.as_view(), name='create-comment'),
-    path('post/comment/<int:pk>/delete', DeleteCommentView.as_view(), name='delete-comment'),
-    path('post/comment/<int:pk>/upvote', UpvoteCommentView.as_view(), name='upvote-comment'),
-    path('post/comment/<int:pk>/downvote', DownvoteCommentView.as_view(), name='downvote-comment'),
+    path('post/comment/<int:pk>/delete/', DeleteCommentView.as_view(), name='delete-comment'),
+    path('post/comment/<int:pk>/upvote/', UpvoteCommentView.as_view(), name='upvote-comment'),
+    path('post/comment/<int:pk>/downvote/', DownvoteCommentView.as_view(), name='downvote-comment'),
 
     # * draft implementation
     path('draft/', SkimDraftView.as_view(), name='skim-draft'),

@@ -286,9 +286,9 @@ class SkimCollectionView(generics.ListAPIView):
 class CreateCommentView(generics.CreateAPIView):
     """
     发布一个评论, 其中pk=0表示对帖子进行评论, pk!=0则表示对编号为pk的帖子进行评论(使用url进行评论更简便)
-    @url: /post/<int:pk>/comment
+    @url: /post/<int:pk>/comment/
     @method: post
-    @param: comment_under
+    @param: comment_under, comment_content
     @return: 发布的评论的部分内容
     """
     queryset = Comment.objects.all()
