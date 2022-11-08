@@ -37,7 +37,7 @@ class CreatePostView(generics.CreateAPIView):
     """
     queryset = Post.objects.all()
     serializer_class = CreatePostSerializer
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     # permission_classes = [IsOwnerOrReadOnlyPermission]
 
@@ -78,7 +78,7 @@ class MyPostView(generics.ListAPIView):
     """
     queryset = Post.objects.all()
     serializer_class = SkimPostSerializer
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self, *args, **kwargs):
@@ -129,7 +129,7 @@ class UpdatePostView(generics.UpdateAPIView):
     queryset = Post.objects.all()
     serializer_class = UpdatePostSerializer
     lookup_field = 'pk'
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -143,7 +143,7 @@ class DeletePostView(generics.DestroyAPIView):
     """
     queryset = Post.objects.all()
     serializer_class = SkimPostSerializer   # ? 没搞懂什么鬼
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'pk'
 
@@ -167,7 +167,7 @@ class UpvotePostView(generics.UpdateAPIView):
     queryset = Post.objects.all()
     serializer_class = UpvotePostSerializer
     lookup_field = 'pk'
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
 class DownvotePostView(generics.UpdateAPIView):
@@ -181,7 +181,7 @@ class DownvotePostView(generics.UpdateAPIView):
     queryset = Post.objects.all()
     serializer_class = DownvotePostSerializer
     lookup_field = 'pk'
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -196,7 +196,7 @@ class SkimBrowserView(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = SkimBrowserSerializer
     model = Post
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self, *args, **kwargs):
@@ -226,7 +226,7 @@ class CollectPostView(generics.UpdateAPIView):
     queryset = Post.objects.all()
     serializer_class = CollectPostSerializer
     lookup_field = 'pk'
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -241,7 +241,7 @@ class SkimCollectionView(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = SkimCollectionSerializer
     model = Post
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self, *args, **kwargs):
@@ -355,7 +355,7 @@ class UpvoteCommentView(generics.UpdateAPIView):
     queryset = Comment.objects.all()
     serializer_class = UpvoteCommentSerializer
     lookup_field = 'pk'
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -370,7 +370,7 @@ class DownvoteCommentView(generics.UpdateAPIView):
     queryset = Comment.objects.all()
     serializer_class = DownvoteCommentSerializer
     lookup_field = 'pk'
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -447,7 +447,7 @@ class OpenDraftView(generics.RetrieveAPIView):
     serializer_class = OpenDraftSerializer
     queryset = Draft.objects.all()
     lookup_field = 'pk'
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
@@ -467,7 +467,7 @@ class UpdateDraftView(generics.UpdateAPIView):
     queryset = Draft.objects.all()
     serializer_class = UpdateDraftSerializer
     lookup_field = 'pk'
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
@@ -486,7 +486,7 @@ class DeleteDraftView(generics.DestroyAPIView):
     """
     queryset = Draft.objects.all()
     serializer_class = SkimDraftSerializer   # ? 没搞懂什么鬼
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'pk'
 
@@ -510,7 +510,7 @@ class UploadDraftView(generics.DestroyAPIView):
 
     queryset = Draft.objects.all()
     serializer_class = OpenDraftSerializer   # ? 没搞懂什么鬼
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'pk'
 
