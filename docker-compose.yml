@@ -28,7 +28,7 @@ services:
       - data:/var/lib/mysql
       - ./my.cnf:/etc/mysql/my.cnf
     environment:
-      MYSQL_USER: root
+      # MYSQL_USER: root
       MYSQL_DATABASE: treehust
       MYSQL_ROOT_PASSWORD: 123456
     ports:
