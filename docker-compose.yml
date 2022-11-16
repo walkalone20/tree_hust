@@ -53,11 +53,7 @@ services:
       - db
     expose:
       - 8000
-    command: 
-      - python manage.py migrate User
-      - python manage.py migrate Post
-      - python manage.py migrate
-      - python manage.py runserver
+    command: sh run.sh
     
 
   frontend:
