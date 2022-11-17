@@ -5,7 +5,7 @@ from . import views
 urlpatterns = [
     path('register/', views.RegisterAPI.as_view(),name="register"),
     path('login/', views.CustomAuthTokenAPI.as_view(),name="login"),
-    path('verify_email',views.VerifyEmail.as_view(),name='verify email'),
+    path('verify_email/',views.VerifyEmail.as_view(),name='verify email'),
     path('logout/', views.LogoutAPI.as_view(), name='logout'),
     path('change_password/<int:pk>/', views.ChangePasswordAPI.as_view(), name='change password'),
     path('update_profile/<int:pk>/', views.UpdateProfileAPI.as_view(), name='update profile'),

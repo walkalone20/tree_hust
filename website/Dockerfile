@@ -4,12 +4,21 @@ FROM node:16 AS build
 
 WORKDIR /app
 COPY . .
-RUN yarn && yarn build
+RUN npm install && npm run build
+# RUN yarn && yarn build
 
-FROM nginx
-WORKDIR /usr/share/nginx/html
-RUN rm -rf ./*
-COPY --from=build /app/build .
+EXPOSE 3000
 
-EXPOSE 80
+CMD npm start
+
+# FROM nginx
+
+# WORKDIR /usr/share/nginx/html/
+
+# COPY --from=build /app/build/* /usr/share/nginx/html
+# COPY nginx.conf /etc/nginx/conf.d
+
+# EXPOSE 80
+
+# CMD ["nginx", "-g", "daemon off;"]
 

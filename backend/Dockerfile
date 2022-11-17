@@ -8,3 +8,5 @@ COPY . /code/
 
 EXPOSE 8000
 EXPOSE 25
+
+CMD sh run.sh

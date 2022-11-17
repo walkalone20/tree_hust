@@ -15,19 +15,63 @@
 
 # 使用手册
 
-python 版本最好3.8以上
+## 分别构建
+python >= 3.8
 
 1. 在tree_hust/settings.py中修改数据库配置 DATABASE = ...
    - NAME: 数据库名称，需要提前在mysql中创建一个新的database
    - PASSWORD: mysql数据库的密码
-   - 别的应该不需要变
-2. 命令行中运行下列命令 (如果是linux系统, 可能是python3)
-   1. `python -m pip install --upgrade pip`
-   2. `python -m pip install -r requirements.txt`
-   3. `python manage.py migrate`
-   4. `python manage.py runserver`
-3. 在 `http://localhost:8000/`处打开
+2. 命令行中运行下列命令构建后端 (如果是linux系统, 可能是python3)
+   1. `cd backend`
+   2. `python -m pip install --upgrade pip`
+   3. `python -m pip install -r requirements.txt`
+   4. `python manage.py migrate User`
+   5. `python manage.py migrate Post`
+   6. `python manage.py migrate`
+   7. `python manage.py runserver`
+3. 命令行中运行下列命令构建前端 (如果是linux系统, 可能是python3)
+   1. `cd ../website`
+   2. `npm install`
+   3. `npm run build` 生成build\文件夹, 放到项目的主目录下
+   4. `npm start`
+4. 将.nginx.conf和build加到nginx配置中
 
+## docker构建
+
+```shell
+
+# 更新apt-get
+sudo apt-get remove docker \
+               docker-engine \
+               docker.io
+
+sudo apt-get update
+
+sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+sudo apt-get update
+
+# 安装docker
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+
+# 启动docker
+sudo systemctl enable docker
+sudo systemctl start docker
+
+# 建立docker用户组
+sudo groupadd docker
+sudo usermod -aG docker $USER
+# 推出终端并重新登录
+
+docker-compose up
+```
+
+---
 
 # Getting Started with Create React App
 
