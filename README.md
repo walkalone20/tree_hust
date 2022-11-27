@@ -13,8 +13,11 @@
 ### 设置
 ![](./icon/settings.png)
 
-### UML
-![](./icon/UML.png)
+### classes UML
+![](./icon/classes.png)
+
+### packages UML
+![](./icon/packages.png)
 
 # 使用手册
 
