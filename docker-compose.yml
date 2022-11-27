@@ -19,7 +19,7 @@ services:
       - 3306
 
 
-  api:
+  backend:
     build: 
       context: backend
     # image: tree_hust_api
@@ -48,7 +48,7 @@ services:
     networks:
       - internal_network
     depends_on:
-      - api
+      - backend
     expose:
       - 3000
       # - 80
@@ -64,7 +64,7 @@ services:
     networks:
       - internal_network
     depends_on:
-      - api
+      - backend
       - frontend
       - db
 

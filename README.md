@@ -13,6 +13,9 @@
 ### 设置
 ![](./icon/settings.png)
 
+### UML
+![](./icon/UML.png)
+
 # 使用手册
 
 ## 分别构建
