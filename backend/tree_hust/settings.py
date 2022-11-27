@@ -96,12 +96,12 @@ DATABASES = {
     { 
         'ENGINE': 'django.db.backends.mysql',    # 数据库引擎
         'NAME': 'tree_hust', # 数据库名称
-        # 'HOST': 'db', # 数据库地址，本机 ip 地址 127.0.0.1
-        'HOST': '127.0.0.1',
+        'HOST': 'http://db', # 数据库地址，本机 ip 地址 127.0.0.1
+        # 'HOST': '127.0.0.1',
         'PORT': 3306, # 端口
         'USER': 'root',  # 数据库用户名
-        # 'PASSWORD': '123456', # 数据库密码
-        'PASSWORD': 'AnyuElin10'
+        'PASSWORD': '123456', # 数据库密码
+        # 'PASSWORD': 'AnyuElin10'
     }  
 }
 

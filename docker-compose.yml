@@ -9,10 +9,10 @@ services:
       - ./my.cnf:/etc/mysql/my.cnf
     environment:
       MYSQL_USER: root
-      MYSQL_DATABASE: treehust
+      MYSQL_DATABASE: tree_hust
       MYSQL_ROOT_PASSWORD: 123456
     ports:
-      - "3307:3306"
+      - "3306:3306"
     networks:
       - internal_network
     expose:
@@ -43,7 +43,7 @@ services:
     restart: always
     ports:
       - "3000:3000"
-      # - "80:80"
+      - "80:80"
       # - "443:443"
     networks:
       - internal_network
@@ -51,7 +51,7 @@ services:
       - backend
     expose:
       - 3000
-      # - 80
+      - 80
 
   nginx:
     image: nginx
