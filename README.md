@@ -6,9 +6,20 @@
 
 ### 主界面
 
+![](./icon/main.png)
+
+### 帖子
+
+![](./icon/post.png)
+
+### 设置
+
+![](./icon/settings.png)
+
 # 使用手册
 
 ## 分别构建
+
 python >= 3.8
 
 1. 在tree_hust/settings.py中修改数据库配置 DATABASE = ...
