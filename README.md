@@ -5,19 +5,6 @@
 以下为主要界面：
 
 ### 主界面
-![](./icon/main.png)
-
-### 帖子
-![](./icon/post.png)
-
-### 设置
-![](./icon/settings.png)
-
-### classes UML
-![](./icon/classes.png)
-
-### packages UML
-![](./icon/packages.png)
 
 # 使用手册
 
@@ -45,7 +32,6 @@ python >= 3.8
 ## docker构建
 
 ```shell
-
 # 更新apt-get
 sudo apt-get remove docker \
                docker-engine \
